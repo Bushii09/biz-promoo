@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <script>
+    // Ky kod ekzekutohet menjëherë para se të vizatohet faqja
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+</script>
+    <meta name="google-site-verification" content="lbZ1wRb_eYthbg-sfhE1uniIKTOkqel6J00k6n7oX7g" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIZPROMO | Ekspertët e Marketingut Digjital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+        html { scroll-behavior: smooth; }
+
+        .dark body { background: #020617; color: #f8fafc; }
+        .dark .bg-white { background: #0f172a !important; color: white; border-color: #1e293b; }
+        
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Extreme Gradients */
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #9333ea 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+        }
+
+        /* --- ANIMACIONET E RREGULLUARA --- */
+
+        /* 1. Animacioni i Butonit (Float & Glow) */
+        @keyframes float {
+            0% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+            50% { transform: translateY(-10px); box-shadow: 0 20px 30px rgba(59, 130, 246, 0.6); }
+            100% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+        }
+        
+        /* RREGULLIMI: Shtojmë z-index dhe position që butoni të shtypet */
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            z-index: 20;
+            display: inline-block;
+        }
+
+        /* 2. Efekti i Kartave kur i prek (Hover) */
+        .hover-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 10;
+        }
+        .hover-card:hover {
+            transform: translateY(-12px) scale(1.03);
+            z-index: 30;
+        }
+
+        /* 3. Shkëlqimi pas Tekstit Kryesor */
+        .glow-text {
+            position: relative;
+            display: inline-block;
+            z-index: 1;
+        }
+        .glow-text::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            filter: blur(20px);
+        }
+
+        /* 4. Sfondi i lëvizshëm (Blob) */
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(147, 51, 234, 0.1) 100%);
+            filter: blur(80px);
+            z-index: -1; /* RRETHI RRIN MBAS CDO GJEJE */
+            pointer-events: none; /* RREGULLIMI: Mos blloko klikimet */
+            border-radius: 50%;
+            animation: move 15s infinite alternate ease-in-out;
+        }
+
+        @keyframes move {
+            0% { transform: translate(-15%, -15%) rotate(0deg); }
+            50% { transform: translate(25%, 20%) rotate(180deg); }
+            100% { transform: translate(-15%, -15%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 transition-colors duration-500">
+<div id="preloader" class="fixed inset-0 z-[10000] flex items-center justify-center transition-all duration-700">
+    <div class="flex flex-col items-center justify-center text-center px-4">
+        <div class="flex flex-col items-center leading-none mb-6 animate-premium-pulse w-max">
+            <div class="flex items-center font-black tracking-tight" style="font-size: 45px;">
+                <span id="preloader-biz">Biz</span>
+                <span style="color: #fbbf24;">Promo</span>
+                <span style="color: #3b82f6; font-size: 20px; align-self: flex-end; margin-bottom: 8px; margin-left: 2px;">.AL</span>
+            </div>
+            <div id="preloader-sub" class="flex justify-between w-full mt-[-2px] font-bold uppercase tracking-[1.5px]" style="font-size: 10px;">
+                <span>REKLAMA</span>
+                <span>•</span>
+                <span>MARKETING</span>
+                <span>•</span>
+                <span>OFERTA</span>
+            </div>
+        </div>
+        <div class="w-40 h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden relative">
+            <div class="h-full gradient-bg absolute top-0 left-0 animate-progress-glow" style="width: 100%;"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Animacioni i logos (lëvizje e lehtë rritëse) */  /* I jep jetë logos */
+/* --- Rregullimi për Light & Dark Mode --- */
+/* LIGHT MODE */
+#preloader { background-color: #ffffff !important; }
+#preloader-biz { color: #0f172a !important; }
+#preloader-sub { color: #64748b !important; }
+
+/* DARK MODE */
+.dark #preloader { background-color: #020617 !important; }
+.dark #preloader-biz { color: #ffffff !important; }
+.dark #preloader-sub { color: #94a3b8 !important; }
+
+/* ANIMACIONET */
+@keyframes premium-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+@keyframes progress-glow { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.animate-premium-pulse { animation: premium-pulse 2s ease-in-out infinite; }
+.animate-progress-glow { animation: progress-glow 1.5s ease-in-out infinite; }
+
+#preloader.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: all 0.7s ease;
+}
+
+    /* Kjo siguron që kur html ka klasën .dark, Biz të bëhet i bardhë */
+    .dark .text-logo-biz {
+        color: #ffffff !important;
+    }
+</style>
+
+<nav class="flex justify-between items-center px-8 py-4 glass sticky top-0 z-[100] border-b border-slate-200">
+    <div class="flex flex-col items-start leading-none">
+        <div class="flex items-center font-black tracking-tight" style="font-size: 32px;">
+            <span class="text-slate-900 text-logo-biz transition-colors duration-500">Biz</span>
+            <span style="color: #fbbf24;">Promo</span>
+            <span style="color: #3b82f6; font-size: 16px; align-self: flex-end; margin-bottom: 4px; margin-left: 2px;">.AL</span>
+        </div>
+        <div class="flex justify-between w-full mt-[-2px] dark:text-slate-400" style="font-size: 8px; letter-spacing: 1.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">
+            <span>REKLAMA</span>
+            <span>•</span>
+            <span>MARKETING</span>
+            <span>•</span>
+            <span>OFERTA</span>
+        </div>
+    </div>
+
+    <div class="flex gap-4 items-center">
+        <select id="lang" class="bg-transparent font-bold text-sm cursor-pointer outline-none dark:text-white">
+    <option value="sq">🇦🇱 SQ</option>
+    <option value="en">🇺🇸 EN</option>
+    <option value="it">🇮🇹 IT</option>
+    <option value="de">🇩🇪 DE</option>
+    <option value="fr">🇫🇷 FR</option>
+    <option value="gr">🇬🇷 GR</option>
+</select>
+
+        <button onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 transition-all active:scale-90">
+            <i class="fas fa-moon dark:hidden"></i>
+            <i class="fas fa-sun hidden dark:block text-yellow-400"></i>
+        </button>
+    </div>
+</nav>
+
+<header class="relative overflow-hidden pt-32 pb-20 px-6 text-center">
+    <div data-aos="zoom-out" data-aos-duration="1500" class="relative z-10">
+        
+        <span class="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-blue-600 uppercase bg-blue-50 dark:bg-blue-900/30 rounded-full" data-i18n="badge">
+    Agjencia #1 e Marketingut në Shqipëri
+</span>
+
+        <h1 class="text-6xl md:text-8xl font-black leading-none mb-8 glow-text">
+            <span class="gradient-text" data-i18n="t1">Ndalo shpenzimet</span><br>
+            <span class="dark:text-white" data-i18n="t2">Fillo merr klientë</span>
+        </h1>
+
+        <p class="text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 font-medium" data-i18n="sub">
+            Ne nuk sjellim thjesht klikime, ne sjellim klientë që blejnë produktet tuaja përmes teknologjisë dhe psikologjisë.
+        </p>
+
+        <div class="flex flex-col md:flex-row gap-4 justify-center relative z-[9999]">
+            
+            <a href="#kontakti" 
+               class="gradient-bg text-white px-12 py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20 hover:shadow-blue-500/40 transition-all active:scale-95 animate-float"
+               style="display: inline-block; position: relative; z-index: 9999; pointer-events: auto !important; cursor: pointer !important;">
+                <span data-i18n="cta">Më gjej klientë</span> 
+                <i class="fas fa-rocket ml-2"></i>
+            </a>
+
+            <a href="#sherbimet" 
+   class="bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-12 py-5 rounded-2xl font-black text-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all relative z-[9999]"
+   data-i18n="s_btn">
+    Shërbimet tona
+</a>
+
+        </div>
+    </div>
+</header>
+
+<section id="sherbimet" class="py-32 px-6 max-w-7xl mx-auto">
+    <div class="text-center mb-20" data-aos="fade-up">
+        <h2 class="text-4xl md:text-5xl font-black mb-4 dark:text-white" data-i18n="w">Çfarë bëjmë ne?</h2>
+        <div class="w-20 h-2 gradient-bg mx-auto rounded-full"></div>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-8">
+        <div class="hover-card bg-white p-10 border border-slate-100 dark:border-slate-800 shadow-xl" data-aos="fade-up" data-aos-delay="100">
+            <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-chart-pie text-blue-600 text-3xl"></i>
+            </div>
+            <h3 class="font-black text-2xl mb-4" data-i18n="a_h">Analizë</h3>
+            <p class="text-slate-500 dark:text-slate-400 leading-relaxed" data-i18n="a_p">Analizojmë biznesin tuaj dhe tregun për të gjetur pikat e forta dhe dobësitë e konkurrentëve.</p>
+        </div>
+        
+        <div class="hover-card bg-white p-10 border border-slate-100 dark:border-slate-800 shadow-xl" data-aos="fade-up" data-aos-delay="200">
+            <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/50 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-wand-magic-sparkles text-purple-600 text-3xl"></i>
+            </div>
+            <h3 class="font-black text-2xl mb-4" data-i18n="s_h">Strategji</h3>
+            <p class="text-slate-500 dark:text-slate-400 leading-relaxed" data-i18n="s_p">Ndërtojmë një sistem automatik (funnel) që tërheq blerësit dhe i bind ata të blejnë nga ju.</p>
+        </div>
+
+        <div class="hover-card bg-white p-10 border border-slate-100 dark:border-slate-800 shadow-xl" data-aos="fade-up" data-aos-delay="300">
+            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/50 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-money-bill-trend-up text-emerald-600 text-3xl"></i>
+            </div>
+            <h3 class="font-black text-2xl mb-4" data-i18n="r_h">Rezultate</h3>
+            <p class="text-slate-500 dark:text-slate-400 leading-relaxed" data-i18n="r_p">Klientët vijnë direkt te ju. Ju vetëm mbyllni shitjet ndërsa ne optimizojmë çdo qindarkë.</p>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 gradient-bg text-white overflow-hidden relative">
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center relative z-10">
+        
+        <div data-aos="zoom-in">
+            <div class="text-4xl font-black" data-i18n="s1_v">500+</div>
+            <div class="text-xs font-bold opacity-80" data-i18n="s1_t">KLIENTË</div>
+        </div>
+
+        <div data-aos="zoom-in" data-aos-delay="100">
+            <div class="text-4xl font-black" data-i18n="s2_v">3M€</div>
+            <div class="text-xs font-bold opacity-80" data-i18n="s2_t">SHITJE TË GJENERUARA</div>
+        </div>
+
+        <div data-aos="zoom-in" data-aos-delay="200">
+            <div class="text-4xl font-black" data-i18n="s3_v">90%</div>
+            <div class="text-xs font-bold opacity-80" data-i18n="s3_t">KËNAQËSI</div>
+        </div>
+
+        <div data-aos="zoom-in" data-aos-delay="300">
+            <div class="text-4xl font-black" data-i18n="s4_v">24/7</div>
+            <div class="text-xs font-bold opacity-80" data-i18n="s4_t">MBËSHTETJE</div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+    /* Detyron shkrimin Biz të bëhet i bardhë në Dark Mode në footer */
+    .dark .logo-footer-biz {
+        color: #ffffff !important;
+    }
+    /* Kthejmë gjithçka në italic për këtë pjesë */
+    .force-italic {
+        font-style: italic !important;
+    }
+</style>
+    
+<section id="kontakti" class="py-20 px-6 max-w-4xl mx-auto force-italic z-10">
+    <div class="bg-white dark:bg-slate-900 p-8 md:p-12 rounded-[32px] shadow-2xl border border-slate-100 dark:border-slate-800 relative z-50">
+        <div class="grid md:grid-cols-2 gap-12">
+            <div>
+                <h2 class="text-3xl font-black mb-4 dark:text-white" data-i18n="c_title">Le të rrisim biznesin tuaj sot!</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-8" data-i18n="c_sub">Rezervoni takim falas me ekspertët tanë.</p>
+                <div class="space-y-4 text-slate-600 dark:text-slate-300">
+                    <div class="flex items-center gap-3"><i class="fas fa-phone text-blue-600"></i><span>+355 68 400 9085</span></div>
+                    <div class="flex items-center gap-3"><i class="fas fa-envelope text-blue-600"></i><span>bizpromob@gmail.com</span></div>
+                </div>
+            </div>
+            
+            <form action="https://formspree.io/f/mvzdqwbk" method="POST" class="space-y-4 relative z-50">
+    <input type="text" name="Business_Name" 
+           class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-900 dark:text-white outline-blue-600" 
+           placeholder="Emri i Biznesit" data-i18n-placeholder="f_name" required>
+    
+    <input type="text" name="Contact_Info" 
+           class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-900 dark:text-white outline-blue-600" 
+           placeholder="WhatsApp / Tel" data-i18n-placeholder="f_phone" required>
+    
+    <textarea name="Message" 
+              class="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-900 dark:text-white outline-blue-600 h-32" 
+              placeholder="Si mund t'ju ndihmojmë?" data-i18n-placeholder="f_msg" required></textarea>
+    
+    <button type="submit" class="w-full gradient-bg text-white py-5 rounded-2xl font-black shadow-lg shadow-blue-500/30" data-i18n="f_btn">
+        Dërgo Kërkesën <i class="fas fa-paper-plane ml-2"></i>
+    </button>
+</form>
+        </div>
+    </div>
+</section>
+
+<footer class="py-12 text-center border-t border-slate-100 dark:border-slate-800 force-italic">
+    <div class="flex flex-col items-center leading-none mb-6">
+        <div class="flex items-center font-black tracking-tight" style="font-size: 28px;">
+            <span class="text-slate-900 logo-footer-biz italic transition-colors duration-500">Biz</span>
+            <span style="color: #fbbf24;" class="italic">Promo</span>
+            <span style="color: #3b82f6; font-size: 14px; align-self: flex-end; margin-bottom: 3px; margin-left: 2px;">.AL</span>
+        </div>
+        <div class="flex justify-between w-40 mt-[2px]" style="font-size: 6px; letter-spacing: 1.5px; font-weight: 700; color: #64748b;">
+            <span>REKLAMA</span><span>•</span><span>MARKETING</span><span>•</span><span>OFERTA</span>
+        </div>
+    </div>
+
+    <div class="flex justify-center gap-6 mb-8">
+    <a href="https://www.instagram.com/bizpromob/" target="_blank" class="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-[#E1306C] hover:scale-110 transition-all shadow-md border border-slate-100 dark:border-slate-700">
+    <i class="fab fa-instagram text-xl"></i>
+</a>
+    
+    <a href="https://www.facebook.com/profile.php?id=61575459346618" target="_blank" class="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-[#1877F2] hover:scale-110 transition-all shadow-md border border-slate-100 dark:border-slate-700">
+        <i class="fab fa-facebook-f text-xl"></i>
+    </a>
+    
+    <a href="https://wa.me/355684009085" target="_blank" class="w-12 h-12 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-[#25D366] hover:scale-110 transition-all shadow-md border border-slate-100 dark:border-slate-700">
+        <i class="fab fa-whatsapp text-xl"></i>
+    </a>
+</div>
+
+    <p class="text-slate-500 dark:text-slate-400 text-sm" data-i18n="footer">
+        © 2026 BIZPROMOB. Të gjitha të drejtat e rezervuara.
+    </p>
+</footer>
+
+<script>
+    // Inicializo Animacionet AOS
+    AOS.init({
+        duration: 800,
+        once: false,
+        mirror: true
+    });
+
+    function toggleTheme() {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    // Ruaj preferencën e temës
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+    }
+
+    function handleSubmit() {
+        // Efekti i festimit kur klikohet butoni
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#3b82f6', '#9333ea', '#ffffff']
+        });
+        
+        alert("Kërkesa u dërgua me sukses! Do t'ju kontaktojmë së shpejti.");
+    }
+
+    // Pjesa e përkthimeve (përdor objektin tënd ekzistues)
+        const translations = {
+    sq: { 
+        badge: "Agjencia #1 e Marketingut në Shqipëri",
+        t1: "Ndalo shpenzimet", t2: "Fillo merr klientë", 
+        sub: "Ne nuk sjellim thjesht klikime, ne sjellim klientë që blejnë produktet tuaja përmes teknologjisë dhe psikologjisë.", 
+        cta: "Më gjej klientë", w: "Çfarë bëjmë ne?",
+        a_h: "Analizë", a_p: "Analizojmë biznesin tuaj dhe tregun për të gjetur pikat e forta.", 
+        s_h: "Strategji", s_p: "Ndërtojmë një sistem automatik që tërheq blerësit e duhur.", 
+        r_h: "Rezultate", r_p: "Klientët vijnë direkt te ju. Ju vetëm mbyllni shitjet.",
+        s1_v: "500+", s1_t: "KLIENTË",
+        s2_v: "5M€", s2_t: "SHITJE TË GJENERUARA",
+        s3_v: "98%", s3_t: "KËNAQËSI",
+        s4_v: "24/7", s4_t: "MBËSHTETJE",
+        c_title: "Le të rrisim biznesin tuaj sot!",
+        c_sub: "Rezervoni takim falas me ekspertët tane.",
+        f_name: "Emri i Biznesit", f_phone: "WhatsApp / Tel", f_msg: "Mesazhi", f_btn: "Dërgo Kërkesën",
+        s_btn: "Shërbimet tona",
+        footer: "© 2026 BIZPROMOB. Të gjitha të drejtat e rezervuara." 
+    },
+    en: { 
+        badge: "The #1 Marketing Agency in Albania",
+        t1: "Stop Wasting", t2: "Start Gaining", 
+        sub: "We don't just bring clicks, we bring customers who buy your products through technology and psychology.", 
+        cta: "Get Clients", w: "What We Do", 
+        a_h: "Analysis", a_p: "We analyze your business and market to find strengths.", 
+        s_h: "Strategy", s_p: "We build an automatic system that attracts the right buyers.", 
+        r_h: "Results", r_p: "Clients come directly to you. You just close sales.",
+        s1_v: "500+", s1_t: "CLIENTS",
+        s2_v: "5M€", s2_t: "SALES GENERATED",
+        s3_v: "98%", s3_t: "SATISFACTION",
+        s4_v: "24/7", s4_t: "SUPPORT",
+        c_title: "Let's grow your business today!",
+        c_sub: "Book a free meeting with our experts.",
+        f_name: "Business Name", f_phone: "WhatsApp / Phone", f_msg: "Message", f_btn: "Send Request",
+        s_btn: "Our Services",
+        footer: "© 2026 BIZPROMOB. All rights reserved." 
+    },
+    it: { 
+        badge: "L'agenzia di marketing n. 1 in Albania",
+        t1: "Smetti di spendere", t2: "Inizia a ottenere clienti", 
+        sub: "Non portiamo solo click, portiamo clienti che acquistano i tuoi prodotti tramite tecnologia e psicologia.", 
+        cta: "Trovami clienti", w: "Cosa facciamo?", 
+        a_h: "Analisi", a_p: "Analizziamo la tua attività e il mercato per trovare i punti di forza.", 
+        s_h: "Strategia", s_p: "Costruiamo un sistema automatico che attira gli acquirenti giusti.", 
+        r_h: "Risultati", r_p: "I clienti vengono direttamente da te. Tu chiudi solo le vendite.",
+        s1_v: "500+", s1_t: "CLIENTI",
+        s2_v: "5M€", s2_t: "VENDITE GENERATE",
+        s3_v: "98%", s3_t: "SODDISFAZIONE",
+        s4_v: "24/7", s4_t: "SUPPORTO",
+        c_title: "Cresciamo il tuo business oggi!",
+        c_sub: "Prenota un incontro gratuito con i nostri esperti.",
+        f_name: "Nome Azienda", f_phone: "WhatsApp / Tel", f_msg: "Messaggio", f_btn: "Invia Richiesta",
+        s_btn: "I nostri servizi",
+        footer: "© 2026 BIZPROMOB. Tutti i diritti riservati." 
+    },
+    de: { 
+        badge: "Die Marketingagentur Nr. 1 in Albanien",
+        t1: "Hör auf zu verschwenden", t2: "Fang an, Kunden zu gewinnen", 
+        sub: "Wir bringen nicht nur Klicks, wir bringen Kunden, die Ihre Produkte kaufen.", 
+        cta: "Kunden finden", w: "Was wir tun", 
+        a_h: "Analyse", a_p: "Wir analysieren Ihr Unternehmen und den Markt.", 
+        s_h: "Strategie", s_p: "Wir bauen ein automatisches System auf.", 
+        r_h: "Ergebnisse", r_p: "Die Kunden kommen direkt zu Ihnen.",
+        s1_v: "500+", s1_t: "KUNDEN",
+        s2_v: "5M€", s2_t: "UMSATZ",
+        s3_v: "98%", s3_t: "ZUFRIEDENHEIT",
+        s4_v: "24/7", s4_t: "SUPPORT",
+        c_title: "Lassen Sie uns Ihr Geschäft ausbauen!",
+        c_sub: "Buchen Sie ein kostenloses Gespräch mit unseren Experten.",
+        f_name: "Firmenname", f_phone: "WhatsApp / Tel", f_msg: "Nachricht", f_btn: "Anfrage Senden",
+        s_btn: "Unsere Dienste",
+        footer: "© 2026 BIZPROMOB. Alle Rechte vorbehalten." 
+    },
+    fr: { 
+        badge: "L'agence de marketing n°1 en Albanie",
+        t1: "Arrêtez de gaspiller", t2: "Gagnez des clients", 
+        sub: "Nous apportons des clients qui achètent vos produits.", 
+        cta: "Trouver des clients", w: "Ce que nous faisons", 
+        a_h: "Analyse", a_p: "Nous analysons votre entreprise.", 
+        s_h: "Stratégie", s_p: "Système automatique d'achat.", 
+        r_h: "Résultats", r_p: "Les clients viennent à vous.",
+        s1_v: "500+", s1_t: "CLIENTS",
+        s2_v: "5M€", s2_t: "VENTES",
+        s3_v: "98%", s3_t: "SATISFACTION",
+        s4_v: "24/7", s4_t: "SUPPORT",
+        c_title: "Développons votre entreprise!",
+        c_sub: "Réservez un rendez-vous gratuit avec nos experts.",
+        f_name: "Nom de l'entreprise", f_phone: "WhatsApp / Tel", f_msg: "Message", f_btn: "Envoyer",
+        s_btn: "Nos services",
+        footer: "© 2026 BIZPROMOB. Tous droits réservés." 
+    },
+    gr: { 
+        badge: "Το #1 Διαφημιστικό Γραφείο στην Αλβανία",
+        t1: "Σταματήστε τα έξοδα", t2: "Κερδίστε πελάτες", 
+        sub: "Φέρνουμε πελάτες που αγοράζουν τα προϊόντα σας.", 
+        cta: "Βρείτε πελάτες", w: "Τι κάνουμε", 
+        a_h: "Ανάλυση", a_p: "Αναλύουμε την επιχείρησή σας.", 
+        s_h: "Στρατηγική", s_p: "Αυτόματο σύστημα πωλήσεων.", 
+        r_h: "Αποτελέσματα", r_p: "Οι πελάτες έρχονται σε εσάς.",
+        s1_v: "500+", s1_t: "ΠΕΛΑΤΕΣ",
+        s2_v: "5M€", s2_t: "ΠΩΛΗΣΕΙΣ",
+        s3_v: "98%", s3_t: "ΙΚΑΝΟΠΟΙΗΣΗ",
+        s4_v: "24/7", s4_t: "ΥΠΟΣΤΗΡΙΞΗ",
+        c_title: "Ας αναπτύξουμε την επιχείρησή σας!",
+        c_sub: "Κλείστε ένα δωρεάν ραντεβού με τους ειδικούς μας.",
+        f_name: "Όνομα Επιχείρησης", f_phone: "WhatsApp / Τηλ", f_msg: "Μήνυμα", f_btn: "Αποστολή",
+        s_btn: "Οι υπηρεσίες μας",
+        footer: "© 2026 BIZPROMOB. Με επιφύλαξη παντός δικαιώματος." 
+    }
+};
+        
+    function setLang(lang) {
+    // Kjo përkthen tekstet normale (titujt, statistikat etj)
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+            el.innerText = translations[lang][key];
+        }
+    });
+
+    // Kjo përkthen shkrimin gri brenda kutive (placeholders)
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang] && translations[lang][key]) {
+            el.placeholder = translations[lang][key];
+        }
+    });
+}
+
+    document.getElementById('lang').addEventListener('change', e => setLang(e.target.value));
+    
+   window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    setTimeout(() => {
+        preloader.classList.add('fade-out');
+    }, 1500); // 1.5 sekonda vonesë që të duket mirë
+});
+
+</script>
+
+</body>
+</html>
