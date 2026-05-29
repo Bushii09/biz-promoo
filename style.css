@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+
+body { font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
+html { scroll-behavior: smooth; }
+
+.dark body { background: #020617; color: #f8fafc; }
+.dark .bg-white { background: #0f172a !important; color: white; border-color: #1e293b; }
+
+/* Glassmorphism Effect */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.dark .glass {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Extreme Gradients */
+.gradient-text {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #9333ea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.gradient-bg {
+    background: linear-gradient(135deg, #3b82f6 0%, #9333ea 100%);
+}
+
+/* --- ANIMACIONET --- */
+
+/* 1. Animacioni i Butonit (Float & Glow) */
+@keyframes float {
+    0% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+    50% { transform: translateY(-10px); box-shadow: 0 20px 30px rgba(59, 130, 246, 0.6); }
+    100% { transform: translateY(0px); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+    position: relative;
+    z-index: 20;
+    display: inline-block;
+}
+
+/* 2. Efekti i Kartave kur i prek (Hover) */
+.hover-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    z-index: 10;
+}
+.hover-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    z-index: 30;
+}
+
+/* 3. Shkëliqimi pas Tekstit Kryesor */
+.glow-text {
+    position: relative;
+    display: inline-block;
+    z-index: 1;
+}
+.glow-text::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 140%;
+    height: 140%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    filter: blur(20px);
+}
+
+/* 4. Sfondi i lëvizshëm (Blob Cinematic Light) */
+.blob {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(147, 51, 234, 0.1) 100%);
+    filter: blur(80px);
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 50%;
+    animation: move 15s infinite alternate ease-in-out;
+}
+
+@keyframes move {
+    0% { transform: translate(-15%, -15%) rotate(0deg); }
+    50% { transform: translate(25%, 20%) rotate(180deg); }
+    100% { transform: translate(-15%, -15%) rotate(360deg); }
+}
+
+/* Preloader Settings */
+#preloader { background-color: #ffffff !important; }
+.dark #preloader { background-color: #020617 !important; }
+
+@keyframes premium-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+@keyframes progress-glow { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+.animate-premium-pulse { animation: premium-pulse 2s ease-in-out infinite; }
+.animate-progress-glow { animation: progress-glow 2.5s ease-in-out infinite; }
+
+#preloader.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: all 0.7s ease;
+}
+
+.drop-shadow-2xl {
+    filter: drop-shadow(0 25px 25px rgba(0, 0, 0, 0.15));
+}
+
+.dark .logo-footer-biz {
+    color: #ffffff !important;
+}
+
+.force-italic {
+    font-style: italic !important;
+}
+
+/* ═══════════════════════════════════════════
+   STILE SHTESË PËR SISTEMIN E MODALIT
+   ═══════════════════════════════════════════ */
+
+/* ── Overlay ──────────────────────────────────────────────── */
+#svc-modal {
+    position: fixed; inset: 0; z-index: 9999;
+    opacity: 0; visibility: hidden;
+    transition: opacity .3s ease, visibility 0s .3s;
+}
+#svc-modal.open {
+    opacity: 1; visibility: visible;
+    transition: opacity .3s ease, visibility 0s 0s;
+}
+#svc-bd {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,.55);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* ── Panel: mobile = bottom sheet ────────────────────────── */
+#svc-panel {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    border-radius: 1.5rem 1.5rem 0 0;
+    background: #fff;
+    overflow: hidden;
+    transform: translateY(110%);
+    transition: transform .48s cubic-bezier(.32,.72,0,1);
+}
+.dark #svc-panel { background: #0f172a; }
+#svc-modal.open #svc-panel { transform: translateY(0); }
+
+#svc-body {
+    overflow-y: auto;
+    max-height: 92vh;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ── Panel: desktop = centred modal ──────────────────────── */
+@media (min-width: 768px) {
+    #svc-panel {
+        top: 50%; left: 50%;
+        bottom: auto; right: auto;
+        width: min(860px, 92vw);
+        border-radius: 1.5rem;
+        transform: translate(-50%, -48%) scale(.94);
+        opacity: 0;
+        transition: transform .42s cubic-bezier(.34,1.3,.64,1), opacity .3s ease;
+    }
+    #svc-modal.open #svc-panel {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    #svc-body { max-height: 88vh; }
+}
+
+/* ── Drag handle: hide on desktop ────────────────────────── */
+@media (min-width: 768px) { .svc-dh { display: none; } }
+
+/* ── Steps grid: 2 kolona në desktop ─────────────────────── */
+@media (min-width: 640px) {
+    .svc-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* ── Step card ───────────────────────────────────────────── */
+.svc-step {
+    display: flex; gap: .85rem; align-items: flex-start;
+    padding: 1rem 1.1rem;
+    border-radius: .8rem;
+    background: #f8fafc;
+    transition: background .2s;
+}
+.svc-step:hover { background: #f0f4f8; }
+.dark .svc-step { background: #1e293b; }
+.dark .svc-step:hover { background: #263248; }
+
+.svc-si {
+    flex-shrink: 0; width: 38px; height: 38px;
+    border-radius: .65rem;
+    display: flex; align-items: center; justify-content: center;
+}
+.svc-t { font-weight: 800; font-size: .875rem; margin: 0 0 .2rem; color: #0f172a; }
+.dark .svc-t { color: #f1f5f9; }
+.svc-d { font-size: .82rem; line-height: 1.65; margin: 0; color: #64748b; }
+.dark .svc-d { color: #94a3b8; }
+
+/* ── Stat box ────────────────────────────────────────────── */
+.svc-stat {
+    flex: 1; text-align: center;
+    padding: .8rem .4rem;
+    border-radius: .8rem;
+    background: #f8fafc;
+}
+.dark .svc-stat { background: #1e293b; }
+.svc-sv { font-size: 1.3rem; font-weight: 900; margin: 0 0 .1rem; line-height: 1; }
+.svc-sl { font-size: .68rem; font-weight: 600; color: #64748b; margin: 0; }
+.dark .svc-sl { color: #94a3b8; }
+
+/* ── Misc ────────────────────────────────────────────────── */
+.svc-desc { font-size: .93rem; line-height: 1.8; margin-bottom: 1.4rem; color: #475569; }
+.dark .svc-desc { color: #cbd5e1; }
+
+.svc-close-btn {
+    position: absolute; top: .9rem; right: .9rem;
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,.22);
+    border: none; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+}
+.svc-close-btn:hover { background: rgba(255,255,255,.4); }
+
+.svc-cta {
+    width: 100%; padding: .9rem; border: none; border-radius: .8rem;
+    color: #fff; font-size: .9rem; font-weight: 800;
+    cursor: pointer; letter-spacing: .01em;
+    transition: opacity .2s, transform .15s;
+}
+.svc-cta:hover { opacity: .87; transform: translateY(-1px); }
+
+/* Arrow hover on cards */
+.svc-arr { display: inline-block; transition: transform .25s ease; }
+[data-modal]:hover .svc-arr { transform: translateX(5px); }
