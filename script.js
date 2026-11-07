@@ -1,518 +1,235 @@
-// Kontrolli fillestar i temës para vizatimit të faqes
-if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
-} else {
-    document.documentElement.classList.remove('dark');
-}
+const menuButton = document.querySelector('.menu-toggle');
+const navigation = document.querySelector('#main-nav');
+const languageSwitcher = document.querySelector('#language-toggle');
+const languageOptions = document.querySelector('#language-options');
+const languageCode = document.querySelector('#language-current');
+let activeLanguage = 'sq';
 
-// Inicializo Animacionet AOS
-AOS.init({
-    duration: 800,
-    once: false,
-    mirror: true
-});
-
-function toggleTheme() {
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-}
-
-// Sistemi i përkthimeve i plotësuar me të dhënat e seksionit të statistikave
 const translations = {
-    sq: { 
-        badge: "Agjencia #1 e Marketingut në Shqipëri",
-        t1: "Ndalo shpenzimet", t2: "Fillo merr klientë", 
-        sub: "Ne nuk sjellim thjesht klikime, ne sjellim klientë që blejnë produktet tuaja përmes teknologjisë dhe psikologjisë.", 
-        cta: "Më gjej klientë", w: "Çfarë bëjmë ne?",
-        a_h: "Analizë", a_p: "Analizojmë biznesin tuaj dhe tregun për të gjetur pikat e forta dhe dobësitë.", 
-        s_h: "Strategji", s_p: "Ndërtojmë një sistem automatik që tërheq blerësit e duhur.", 
-        r_h: "Rezultate", r_p: "Klientët vijnë direkt te ju. Ju vetëm mbyllni shitjet.",
-        stats_badge: "Statistikat tona",
-        stats_title: "Rezultate që flasin vetë",
-        stats_desc: "Ne ndërtojmë marka moderne, premium dhe performancë reale për bizneset që duan të dominojnë online.",
-        s1_v: "500+", s1_t: "Klientë Aktivë",
-        s2_v: "3M€", s2_t: "Shitje të Gjeneruara",
-        s3_v: "90%", s3_t: "Kënaqësi e Klientëve",
-        s4_v: "24/7", s4_t: "Mbështetje Premium",
-        c_title: "Le të rrisim biznesin tuaj sot!",
-        c_sub: "Rezervoni takim falas me ekspertët tanë.",
-        f_name: "Emri i Biznesit", f_phone: "WhatsApp / Tel", f_msg: "Si mund t'ju ndihmojmë?", f_btn: "Dërgo Kërkesën",
-        s_btn: "Shërbimet tona",
-        footer: "© 2026 BIZPROMOB. Të gjitha të drejtat e rezervuara.",
-        alert_success: "Kërkesa u dërgua me sukses! Do t'ju kontaktojmë së shpejti.",
-        read_more: "Lexo më shumë",
-        m_cta: "Na kontaktoni për konsultim falas  →",
-        a_m_title: "Analizë e Thelluar", a_m_sub: "E kuptojmë biznesin tuaj para çdo hapi tjetër",
-        a_m_desc: "Analiza jonë nuk është sipërfaqësore — gërmojmë thellë tek industria, konkurrenca dhe blerësit potencialë. Rezultati: një plan veprimi i bazuar në të dhëna reale, jo në supozime.",
-        a_s1_t: "Audit i Biznesit", a_s1_d: "Vlerësojmë gjendjen aktuale: çfarë po funkonon, çfarë jo dhe ku po humbasin klientët tuaj.",
-        a_s2_t: "Analiza e Konkurrentëve", a_s2_d: "Zbulojmë strategzitë e konkurrentëve — pikat e forta dhe zbrazëtirat që ju mund t'i shfrytëzoni.",
-        a_s3_t: "Profili i Blerësit Ideal", a_s3_d: "Identifikojmë kush janë klientët tuaj më të mirë: demografike, sjellje dhe çfarë i bind të blejnë.",
-        a_s4_t: "Analiza e Tregut", a_s4_d: "Kuptojmë trendet aktuale dhe hapësirat e papërdorura ku biznesi juaj mund të rritet shpejt.",
-        a_st1_v: "360°", a_st1_l: "Vështrim i plotë", a_st2_v: "48h", a_st2_l: "Raport i detajuar", a_st3_v: "100%", a_st3_l: "E personalizuar",
-        s_m_title: "Strategji & Funnel Marketing", s_m_sub: "Sistemi që punon 24/7, edhe kur jeni duke fjetur",
-        s_m_desc: "Ndërtojmë funnel-in e plotë të shitjes — nga kontakti i parë deri te blerja dhe rikthimi. Gjithçka automatizuar, gjithçka e testuar dhe e optimizuar për konvertim maksimal.",
-        s_s1_t: "Ndërtimi i Funnel-it", s_s1_d: "Projektojmë rrugën e blerësit hap pas hapi: awareness → interes → vendim → blerje → rikthim.",
-        s_s2_t: "Automatizim i Komunikimit", s_s2_d: "Email sekuenca, SMS dhe follow-up automatik që ndjekin çdo lead pa ndërhyrjen tuaj.",
-        s_s3_t: "Reklama të Targetuara", s_s3_d: "Meta Ads & Google Ads të optimizuara për t'u parë nga njerëzit e duhur, në momentin e duhur.",
-        s_s4_t: "Përmbajtje Bindëse", s_s4_d: "Tekste reklamash, video-kreativë dhe landing page të ndërtuar mbi psikologjinë e blerjes.",
-        s_st1_v: "3×", s_st1_l: "Rritje mesatare", s_st2_v: "24/7", s_st2_l: "Sistem aktiv", s_st3_v: "30d", s_st3_l: "Setup i plotë",
-        r_m_title: "Rezultate të Matshme", r_m_sub: "Çdo qindarkë e investuar ka një kthim të qartë",
-        r_m_desc: "Nuk besojmë në premtime boshe. Çdo gjë matet, analizohet dhe optimizohet. Shihni saktësisht ku po shkojnë paratë tuaja dhe çfarë po sjellin ato çdo ditë.",
-        r_s1_t: "Dashboard në Kohë Reale", r_s1_d: "Shihni live: sa lead keni sot, sa blenë dhe sa kushtoi çdo klient i ri i fituar.",
-        r_s2_t: "KPI-të Kryesore", r_s2_d: "Ndjekim CPL (Kosto/Lead), ROAS (Kthim nga Reklamat) and LTV (Vlera e Jetës së Klientit).",
-        r_s3_t: "A/B Testing i Vazhdushëm", r_s3_d: "Testojmë variante reklamash dhe faqesh çdo javë për të gjetur formulën me konvertim maksimal.",
-        r_s4_t: "Raportim Javor", r_s4_d: "Takime javore ku rishikojmë progresin, diskutojmë rezultatet dhe planifikojmë hapat vijues.",
-        r_st1_v: "+87%", r_st1_l: "Konvertim mesatar", r_st2_v: "2.4×", r_st2_l: "ROAS mesatar", r_st3_v: "Live", r_st3_l: "Raportim",
-        cats: "REKLAMA • MARKETING • OFERTA • VIDEO PËR FËMIJË",
-        n_call: "Na telefono direkt",
-        n_email: "Dërgo Email zyrtar"
+    sq: {
+        languageLabel: 'Zgjidh gjuhën', navLabel: 'Navigimi kryesor', menuOpen: 'Hap menunë', menuClose: 'Mbyll menunë', navServices: 'Çfarë bëjmë', navProcess: 'Si punojmë', navContact: 'Kontakt', navWhatsapp: 'Flasim në WhatsApp',
+        heroAlt: 'Një ekip krijues që planifikon së bashku', heroEyebrow: 'Studio kreative për rritje', heroTitleOne: 'Ide të guximshme.', heroTitleTwo: 'Rritje reale.',
+        heroCopy: 'I japim formë markës suaj dhe e çojmë te njerëzit e duhur, me strategji të qartë, reklama të zgjuara dhe përmbajtje që mbahet mend.', heroCta: 'Tregomë për biznesin', heroServices: 'Zbulo çfarë bëjmë', heroNote: 'Nga ideja e parë te fushata live.',
+        introEyebrow: 'BizPromo.AL · Shqipëri', introTitleOne: 'Marketingu i mirë', introTitleTwo: 'nis me qartësi.', introCopy: 'Nuk ka nevojë për zhurmë më të madhe. Ka nevojë për një ide të fortë, një plan të kuptueshëm dhe punë kreative që i shërben biznesit tuaj.', introLink: 'Njihuni me mënyrën tonë të punës',
+        servicesEyebrow: 'Çfarë bëjmë', servicesTitleOne: 'Nga ideja', servicesTitleTwo: 'te ndikimi.', servicesAside: 'Shërbime që lidhen mes tyre dhe punojnë për të njëjtin qëllim: ta bëjnë biznesin tuaj më të dukshëm e më të dallueshëm.',
+        serviceOneTitle: 'Strategji & identitet', serviceOneCopy: 'Analizojmë markën dhe konkurrentët, përcaktojmë audiencën ideale, pozicionimin, mesazhet, tonin e komunikimit dhe drejtimin vizual.', serviceOneTag: 'Drejtimi',
+        serviceTwoTitle: 'Reklama digjitale', serviceTwoCopy: 'Planifikojmë fushata në Meta Ads (Facebook dhe Instagram) dhe Google Ads: targetim, krijime reklamash, testim, optimizim dhe raportim.', serviceTwoTag: 'Shtrirja',
+        serviceThreeTitle: 'Përmbajtje & video', serviceThreeCopy: 'Krijojmë kalendarë për rrjetet sociale, tekste postimesh, ide vizuale, oferta promocionale, video të shkurtra dhe video për fëmijë.', serviceThreeTag: 'Krijimtaria',
+        serviceFourTitle: 'Matje & përmirësim', serviceFourCopy: 'Ndjekim shtrirjen, klikimet dhe kërkesat, përgatisim raporte të qarta dhe propozojmë çfarë të përmirësohet në fushatën e radhës.', serviceFourTag: 'Përparimi',
+        processEyebrow: 'Si punojmë', processTitleOne: 'Pa mister.', processTitleTwo: 'Me metodë.', processCopy: 'Një proces i thjeshtë, që ju mban të përfshirë dhe çdo hap e lidh me objektivin tuaj.',
+        stepOneTitle: 'Dëgjojmë', stepOneCopy: 'Kuptojmë biznesin, sfidat, audiencën dhe atë që doni të arrini.', stepTwoTitle: 'Planifikojmë', stepTwoCopy: 'Përcaktojmë drejtimin, mesazhin, kanalet dhe veprimet konkrete.', stepThreeTitle: 'Krijojmë & përmirësojmë', stepThreeCopy: 'Përgatisim dhe publikojmë punën, masim reagimin dhe përshtatim fushatën.',
+        contactEyebrow: 'Hapi i parë', contactTitleOne: 'Ke një ide?', contactTitleTwo: 'Ta flasim.', contactCopy: 'Na trego pak për biznesin dhe çfarë dëshiron të ndryshosh. Biseda e parë nis këtu.', phoneLabel: 'Telefon / WhatsApp', emailLabel: 'Email', socialLabel: 'Rrjetet sociale',
+        businessLabel: 'Emri i biznesit', businessPlaceholder: 'Si quhet biznesi juaj?', contactLabel: 'Numri i telefonit ose WhatsApp', phonePlaceholder: '+355 ...', messageLabel: 'Çfarë keni në mendje?', messagePlaceholder: 'Na tregoni shkurt për idenë tuaj...', submitLabel: 'Dërgo mesazhin', sendingLabel: 'Duke dërguar...', successMessage: 'Mesazhi u dërgua. Do t’ju kontaktojmë së shpejti.', errorMessage: 'Mesazhi nuk u dërgua. Provoni përsëri ose na telefononi.', footerTagline: 'Ide të guximshme. Rritje reale.', pageTitle: 'BizPromo.AL — Ide të guximshme. Rritje reale.', pageDescription: 'BizPromo.AL ndihmon bizneset të komunikojnë më qartë dhe të rriten me strategji, reklama dhe përmbajtje kreative.'
     },
-    en: { 
-        badge: "The #1 Marketing Agency in Albania",
-        t1: "Stop Wasting", t2: "Start Gaining Customers", 
-        sub: "We don't just bring clicks, we bring customers who buy your products through technology and psychology.", 
-        cta: "Get Clients", w: "What We Do", 
-        a_h: "Analysis", a_p: "We analyze your business and market to find strengths.", 
-        s_h: "Strategy", s_p: "We build an automatic system that attracts the right buyers.", 
-        r_h: "Results", r_p: "Clients come directly to you. You just close sales.",
-        stats_badge: "Our Statistics",
-        stats_title: "Results that speak for themselves",
-        stats_desc: "We build modern, premium brands and real performance for businesses that want to dominate online.",
-        s1_v: "500+", s1_t: "Active Clients",
-        s2_v: "3M€", s2_t: "Sales Generated",
-        s3_v: "90%", s3_t: "Customer Satisfaction",
-        s4_v: "24/7", s4_t: "Premium Support",
-        c_title: "Let's grow your business today!",
-        c_sub: "Book a free meeting with our experts.",
-        f_name: "Business Name", f_phone: "WhatsApp / Phone", f_msg: "How can we help you?", f_btn: "Send Request",
-        s_btn: "Our Services",
-        footer: "© 2026 BIZPROMOB. All rights reserved.",
-        alert_success: "Request sent successfully! We will contact you soon.",
-        read_more: "Read more",
-        m_cta: "Contact us for a free consultation  →",
-        a_m_title: "In-Depth Analysis", a_m_sub: "We understand your business before any other step",
-        a_m_desc: "Our analysis is not superficial — we dig deep into the industry, competition, and potential buyers. The result: an action plan based on real data, not assumptions.",
-        a_s1_t: "Business Audit", a_s1_d: "We evaluate the current state: what's working, what's not, and where you're losing customers.",
-        a_s2_t: "Competitor Analysis", a_s2_d: "We uncover competitor strategies — their strengths and the gaps you can exploit.",
-        a_s3_t: "Ideal Buyer Profile", a_s3_d: "We identify who your best customers are: demographics, behavior, and what triggers them to buy.",
-        a_s4_t: "Market Analysis", a_s4_d: "We understand current trends and untapped spaces where your business can grow rapidly.",
-        a_st1_v: "360°", a_st1_l: "Full overview", a_st2_v: "48h", a_st2_l: "Detailed report", a_st3_v: "100%", a_st3_l: "Personalized",
-        s_m_title: "Strategy & Funnel Marketing", s_m_sub: "A system working 24/7, even while you sleep",
-        s_m_desc: "We build the complete sales funnel — from first contact to purchase and retention. Fully automated, fully tested, and optimized for maximum conversion.",
-        s_s1_t: "Funnel Building", s_s1_d: "We map the buyer's journey step-by-step: awareness → interest → decision → purchase → retention.",
-        s_s2_t: "Communication Automation", s_s2_d: "Automated email sequences, SMS, and follow-ups that nurture every lead without your intervention.",
-        s_s3_t: "Targeted Ads", s_s3_d: "Meta Ads & Google Ads optimized to be seen by the right people, at the exact right moment.",
-        s_s4_t: "Compelling Content", s_s4_d: "Ad copies, video creatives, and landing pages built on the psychology of buying.",
-        s_st1_v: "3×", s_st1_l: "Average growth", s_st2_v: "24/7", s_st2_l: "Active system", s_st3_v: "30d", s_st3_l: "Full setup",
-        r_m_title: "Measurable Results", r_m_sub: "Every dime invested has a clear return",
-        r_m_desc: "We don't believe in empty promises. Everything is measured, analyzed, and optimized. See exactly where your money goes and what it brings every day.",
-        r_s1_t: "Real-Time Dashboard", r_s1_d: "See live: how many leads today, how many bought, and the cost of every new acquired customer.",
-        r_s2_t: "Key KPIs", r_s2_d: "We track CPL (Cost per Lead), ROAS (Return on Ad Spend), and LTV (Customer Lifetime Value).",
-        r_s3_t: "Continuous A/B Testing", r_s3_d: "We test ad variants and landing pages weekly to find the formula with maximum conversion.",
-        r_s4_t: "Weekly Reporting", r_s4_d: "Weekly meetings where we review progress, discuss results, and plan the next steps.",
-        r_st1_v: "+87%", r_st1_l: "Avg Conversion", r_st2_v: "2.4×", r_st2_l: "Avg ROAS", r_st3_v: "Live", r_st3_l: "Reporting",
-        cats: "ADS • MARKETING • OFFERS • VIDEO FOR KIDS",
-        n_call: "Call us directly",
-        n_email: "Send official Email"
+    en: {
+        languageLabel: 'Choose language', navLabel: 'Main navigation', menuOpen: 'Open menu', menuClose: 'Close menu', navServices: 'What we do', navProcess: 'Our process', navContact: 'Contact', navWhatsapp: 'Chat on WhatsApp',
+        heroAlt: 'A creative team planning together', heroEyebrow: 'Creative studio for growth', heroTitleOne: 'Bold ideas.', heroTitleTwo: 'Real growth.',
+        heroCopy: 'We shape your brand and connect it with the right people through clear strategy, smart advertising, and memorable content.', heroCta: 'Tell us about your business', heroServices: 'Explore our work', heroNote: 'From the first idea to a live campaign.',
+        introEyebrow: 'BizPromo.AL · Albania', introTitleOne: 'Good marketing', introTitleTwo: 'starts with clarity.', introCopy: 'You do not need more noise. You need a strong idea, a clear plan, and creative work that serves your business.', introLink: 'See how we work',
+        servicesEyebrow: 'What we do', servicesTitleOne: 'From idea', servicesTitleTwo: 'to impact.', servicesAside: 'Connected services, built around one goal: making your business more visible and distinctive.',
+        serviceOneTitle: 'Strategy & identity', serviceOneCopy: 'We review your brand and competitors, define your ideal audience and positioning, and shape your key messages, voice, and visual direction.', serviceOneTag: 'Direction',
+        serviceTwoTitle: 'Digital advertising', serviceTwoCopy: 'We plan Meta Ads (Facebook and Instagram) and Google Ads, including audience targeting, ad creative, testing, optimization, and reporting.', serviceTwoTag: 'Reach',
+        serviceThreeTitle: 'Content & video', serviceThreeCopy: 'We create social media calendars, post copy, visual concepts, promotional offers, short videos, and video content for children.', serviceThreeTag: 'Creative',
+        serviceFourTitle: 'Measure & improve', serviceFourCopy: 'We track reach, clicks, and inquiries, prepare clear reports, and recommend what to improve in the next campaign.', serviceFourTag: 'Progress',
+        processEyebrow: 'Our process', processTitleOne: 'No mystery.', processTitleTwo: 'Just a method.', processCopy: 'A straightforward process that keeps you involved and ties every step to your goals.',
+        stepOneTitle: 'Listen', stepOneCopy: 'We learn about your business, challenges, audience, and ambitions.', stepTwoTitle: 'Plan', stepTwoCopy: 'We set the direction, message, channels, and practical next steps.', stepThreeTitle: 'Create & improve', stepThreeCopy: 'We prepare and launch the work, measure its response, and refine the campaign.',
+        contactEyebrow: 'Start here', contactTitleOne: 'Have an idea?', contactTitleTwo: 'Let’s talk.', contactCopy: 'Tell us a little about your business and what you want to change. The first conversation starts here.', phoneLabel: 'Phone / WhatsApp', emailLabel: 'Email', socialLabel: 'Social media',
+        businessLabel: 'Business name', businessPlaceholder: 'What is your business called?', contactLabel: 'Phone number or WhatsApp', phonePlaceholder: '+355 ...', messageLabel: 'What do you have in mind?', messagePlaceholder: 'Tell us a little about your idea...', submitLabel: 'Send message', sendingLabel: 'Sending...', successMessage: 'Message sent. We’ll be in touch soon.', errorMessage: 'Message not sent. Please try again or call us.', footerTagline: 'Bold ideas. Real growth.', pageTitle: 'BizPromo.AL — Bold ideas. Real growth.', pageDescription: 'BizPromo.AL helps businesses grow with clear strategy, advertising, and creative content.'
     },
-    it: { 
-        badge: "L'agenzia di marketing n. 1 in Albania",
-        t1: "Smetti di spendere", t2: "Inizia a ottenere clienti", 
-        sub: "Non portiamo solo click, portiamo clienti che acquistano i tuoi prodotti tramite tecnologia e psicologia.", 
-        cta: "Trovami clienti", w: "Cosa facciamo?", 
-        a_h: "Analisi", a_p: "Analizziamo la tua attività e il mercato per trovare i punti di forza.", 
-        s_h: "Strategia", s_p: "Costruiamo un sistema automatico che attira gli acquirenti giusti.", 
-        r_h: "Risultati", r_p: "I clienti vengono direttamente da te. Tu chiudi solo le vendite.",
-        stats_badge: "Le nostre statistiche",
-        stats_title: "Risultati che parlano da soli",
-        stats_desc: "Costruiamo marchi moderni, premium e prestazioni reali per le aziende che vogliono dominare online.",
-        s1_v: "500+", s1_t: "Clienti Attivi",
-        s2_v: "3M€", s2_t: "Vendite Generate",
-        s3_v: "90%", s3_t: "Soddisfazione Clienti",
-        s4_v: "24/7", s4_t: "Supporto Premium",
-        c_title: "Cresciamo il tuo business oggi!",
-        c_sub: "Prenota un incontro gratuito con i nostri esperti.",
-        f_name: "Nome Azienda", f_phone: "WhatsApp / Tel", f_msg: "Come possiamo aiutarti?", f_btn: "Invia Richiesta",
-        s_btn: "I nostri servizi",
-        footer: "© 2026 BIZPROMOB. Tutti i diritti riservati.",
-        alert_success: "Richiesta inviata con successo! Ti contatteremo presto.",
-        read_more: "Leggi di più",
-        m_cta: "Contattaci per una consulenza gratuita  →",
-        a_m_title: "Analisi Approfondita", a_m_sub: "Comprendiamo la tua attività prima di ogni altro passo",
-        a_m_desc: "La nostra analisi non è superficiale — scaviamo a fondo nel settore, nella concorrenza e nei potenziali acquirenti. Il risultato: un piano d'azione basato su dati reali, non su supposizioni.",
-        a_s1_t: "Audit Aziendale", a_s1_d: "Valutiamo lo stato attuale: cosa funziona, cosa no e dove stai perdendo clienti.",
-        a_s2_t: "Analisi dei Concorrenti", a_s2_d: "Scopriamo le strategie dei concorrenti — i loro punti di forza e i divari che puoi sfruttare.",
-        a_s3_t: "Profilo del Buyer Ideal", a_s3_d: "Identifichiamo chi sono i tuoi migliori clienti: demografia, comportamento e cosa li spinge a comprare.",
-        a_s4_t: "Analisi di Mercato", a_s4_d: "Comprendiamo le tendenze attuali e gli spazi non sfruttati dove la tua attività può crescere rapidamente.",
-        a_st1_v: "360°", a_st1_l: "Panoramica completa", a_st2_v: "48h", a_st2_l: "Report dettagliato", a_st3_v: "100%", a_st3_l: "Personalizzato",
-        s_m_title: "Strategia & Marketing di Funnel", s_m_sub: "Un sistema che lavora 24/7, anche mentre dormi",
-        s_m_desc: "Costruiamo il funnel di vendita completo — dal primo contatto all'acquisto e alla fidelizzazione. Completamente automatizzato, testato e ottimizzato per la massima conversione.",
-        s_s1_t: "Creazione del Funnel", s_s1_d: "Mappiamo il percorso dell'acquirente passo dopo passo: consapevolezza → interesse → decisione → acquisto → fidelizzazione.",
-        s_s2_t: "Automazione delle Comunicazioni", s_s2_d: "Sequenze email, SMS e follow-up automatici che coltivano ogni lead senza il tuo intervento.",
-        s_s3_t: "Annunci Targettizzati", s_s3_d: "Meta Ads e Google Ads ottimizzati per essere visti dalle persone giuste, al momento esatto.",
-        s_s4_t: "Contenuti Coinvolgenti", s_s4_d: "Copy degli annunci, creatività video e landing page basate sulla psicologia d'acquisto.",
-        s_st1_v: "3×", s_st1_l: "Crescita media", s_st2_v: "24/7", s_st2_l: "Sistema attivo", s_st3_v: "30g", s_st3_l: "Configurazione completa",
-        r_m_title: "Risultati Misurabili", r_m_sub: "Ogni centesimo investito ha un ritorno chiaro",
-        r_m_desc: "Non crediamo nelle promesse vuote. Tutto viene misurato, analizzato e ottimizzato. Vedi esattamente dove vanno i tuoi soldi e cosa portano ogni giorno.",
-        r_s1_t: "Dashboard in Tempo Reale", r_s1_d: "Vedi live: quanti lead oggi, quanti hanno acquistato e il costo di ogni nuovo cliente acquisito.",
-        r_s2_t: "KPI Principali", r_s2_d: "Monitoriamo CPL (Costo per Lead), ROAS (Ritorno sulla spesa pubblicitaria) e LTV (Valore del ciclo di vita del cliente).",
-        r_s3_t: "A/B Testing Continuo", r_s3_d: "Testiamo varianti di annunci e landing page ogni settimana per trovare la formula con la massima conversione.",
-        r_s4_t: "Report Settimanale", r_s4_d: "Incontri settimanali in cui esaminiamo i progressi, discutiamo i risultati e pianifichiamo i passi successivi.",
-        r_st1_v: "+87%", r_st1_l: "Conversione media", r_st2_v: "2.4×", r_st2_l: "ROAS medio", r_st3_v: "Live", r_st3_l: "Reportistica",
-        cats: "ANNUNCI • MARKETING • OFFERTE • VIDEO PER BAMBINI",
-        n_call: "Chiamaci direttamente",
-        n_email: "Invia Email ufficiale"
+    it: {
+        languageLabel: 'Scegli la lingua', navLabel: 'Navigazione principale', menuOpen: 'Apri il menu', menuClose: 'Chiudi il menu', navServices: 'Cosa facciamo', navProcess: 'Come lavoriamo', navContact: 'Contatti', navWhatsapp: 'Scrivici su WhatsApp',
+        heroAlt: 'Un team creativo pianifica insieme', heroEyebrow: 'Studio creativo per la crescita', heroTitleOne: 'Idee audaci.', heroTitleTwo: 'Crescita reale.',
+        heroCopy: 'Diamo forma al tuo brand e lo portiamo alle persone giuste con una strategia chiara, pubblicità intelligente e contenuti memorabili.', heroCta: 'Parlaci della tua attività', heroServices: 'Scopri i nostri servizi', heroNote: 'Dalla prima idea alla campagna online.',
+        introEyebrow: 'BizPromo.AL · Albania', introTitleOne: 'Il buon marketing', introTitleTwo: 'inizia con chiarezza.', introCopy: 'Non serve fare più rumore. Serve un’idea forte, un piano chiaro e un lavoro creativo al servizio della tua attività.', introLink: 'Scopri come lavoriamo',
+        servicesEyebrow: 'Cosa facciamo', servicesTitleOne: 'Dall’idea', servicesTitleTwo: 'all’impatto.', servicesAside: 'Servizi collegati tra loro, con un unico obiettivo: rendere la tua attività più visibile e riconoscibile.',
+        serviceOneTitle: 'Strategia e identità', serviceOneCopy: 'Analizziamo brand e concorrenti, definiamo il pubblico ideale e il posizionamento, poi sviluppiamo messaggi, tono e direzione visiva.', serviceOneTag: 'Direzione',
+        serviceTwoTitle: 'Pubblicità digitale', serviceTwoCopy: 'Pianifichiamo campagne Meta Ads (Facebook e Instagram) e Google Ads: pubblico, creatività, test, ottimizzazione e report.', serviceTwoTag: 'Copertura',
+        serviceThreeTitle: 'Contenuti e video', serviceThreeCopy: 'Creiamo calendari social, testi per i post, idee visive, promozioni, video brevi e contenuti video per bambini.', serviceThreeTag: 'Creatività',
+        serviceFourTitle: 'Misurazione e miglioramento', serviceFourCopy: 'Monitoriamo copertura, clic e richieste, prepariamo report chiari e indichiamo come migliorare la campagna successiva.', serviceFourTag: 'Progresso',
+        processEyebrow: 'Il nostro metodo', processTitleOne: 'Niente misteri.', processTitleTwo: 'Un metodo chiaro.', processCopy: 'Un processo semplice che ti coinvolge e collega ogni fase ai tuoi obiettivi.',
+        stepOneTitle: 'Ascoltiamo', stepOneCopy: 'Comprendiamo attività, sfide, pubblico e obiettivi.', stepTwoTitle: 'Pianifichiamo', stepTwoCopy: 'Definiamo direzione, messaggio, canali e azioni concrete.', stepThreeTitle: 'Creiamo e miglioriamo', stepThreeCopy: 'Prepariamo e pubblichiamo il lavoro, misuriamo la risposta e ottimizziamo la campagna.',
+        contactEyebrow: 'Il primo passo', contactTitleOne: 'Hai un’idea?', contactTitleTwo: 'Parliamone.', contactCopy: 'Raccontaci la tua attività e cosa vorresti cambiare. La prima conversazione inizia qui.', phoneLabel: 'Telefono / WhatsApp', emailLabel: 'Email', socialLabel: 'Social media',
+        businessLabel: 'Nome dell’attività', businessPlaceholder: 'Come si chiama la tua attività?', contactLabel: 'Telefono o WhatsApp', phonePlaceholder: '+355 ...', messageLabel: 'Cosa hai in mente?', messagePlaceholder: 'Raccontaci brevemente la tua idea...', submitLabel: 'Invia messaggio', sendingLabel: 'Invio in corso...', successMessage: 'Messaggio inviato. Ti contatteremo presto.', errorMessage: 'Invio non riuscito. Riprova o chiamaci.', footerTagline: 'Idee audaci. Crescita reale.', pageTitle: 'BizPromo.AL — Idee audaci. Crescita reale.', pageDescription: 'BizPromo.AL aiuta le aziende a crescere con strategia, pubblicità e contenuti creativi.'
     },
-    de: { 
-        badge: "Die Marketingagentur Nr. 1 in Albanien",
-        t1: "Hör auf zu verschwenden", t2: "Fang an, Kunden zu gewinnen", 
-        sub: "Wir bringen nicht nur Klicks, wir bringen Kunden, die Ihre Produkte durch Technologie und Psychologie kaufen.", 
-        cta: "Kunden finden", w: "Was wir tun", 
-        a_h: "Analyse", a_p: "Wir analysieren Ihr Unternehmen und den Markt.", 
-        s_h: "Strategie", s_p: "Wir bauen ein automatisches System auf.", 
-        r_h: "Ergebnisse", r_p: "Die Kunden kommen direkt zu Ihnen.",
-        stats_badge: "Unsere Statistiken",
-        stats_title: "Ergebnisse, die für sich sprechen",
-        stats_desc: "Wir bauen moderne, Premium-Marken und echte Leistung für Unternehmen, die online dominieren wollen.",
-        s1_v: "500+", s1_t: "Aktive Kunden",
-        s2_v: "3M€", s2_t: "Generierter Umsatz",
-        s3_v: "90%", s3_t: "Kundenzufriedenheit",
-        s4_v: "24/7", s4_t: "Premium-Support",
-        c_title: "Lassen Sie uns Ihr Geschäft ausbauen!",
-        c_sub: "Buchen Sie ein kostenloses Gespräch mit unseren Experten.",
-        f_name: "Firmenname", f_phone: "WhatsApp / Tel", f_msg: "Wie können wir helfen?", f_btn: "Anfrage Senden",
-        s_btn: "Unsere Dienste",
-        footer: "© 2026 BIZPROMOB. Alle Rechte vorbehalten.",
-        alert_success: "Anfrage erfolgreich gesendet! Wir werden Sie bald kontaktieren.",
-        read_more: "Mehr lesen",
-        m_cta: "Kontaktieren Sie uns für eine kostenlose Beratung  →",
-        a_m_title: "Tiefenanalyse", a_m_sub: "Wir verstehen Ihr Unternehmen vor jedem anderen Schritt",
-        a_m_desc: "Unsere Analyse ist nicht oberflächlich — wir tauchen tief in die Branche, den Wettbewerb und die potenziellen Käufer ein. Das Ergebnis: ein Aktionsplan basierend auf echten Daten, nicht auf Vermutungen.",
-        a_s1_t: "Unternehmens-Audit", a_s1_d: "Wir bewerten den aktuellen Zustand: Was funktioniert, was nicht und wo Sie Kunden verlieren.",
-        a_s2_t: "Wettbewerbsanalyse", a_s2_d: "Wir decken die Strategien der Wettbewerber auf — ihre Stärken und die Lücken, die Sie nutzen können.",
-        a_s3_t: "Ideales Käuferprofil", a_s3_d: "Wir identifizieren Ihre besten Kunden: Demografie, Verhalten und was sie zum Kauf bewegt.",
-        a_s4_t: "Marktanalyse", a_s4_d: "Wir verstehen aktuelle Trends und ungenutzte Räume, in denen Ihr Unternehmen schnell wachsen kann.",
-        a_st1_v: "360°", a_st1_l: "Vollständiger Überblick", a_st2_v: "48h", a_st2_l: "Detaillierter Bericht", a_st3_v: "100%", a_st3_l: "Personalisiert",
-        s_m_title: "Strategie & Funnel-Marketing", s_m_sub: "Ein System, das rund um die Uhr arbeitet, selbst während Sie schlafen",
-        s_m_desc: "Wir bauen den kompletten Verkaufstrichter auf — vom ersten Kontakt bis zum Kauf und der Kundenbindung. Vollständig automatisiert, getestet und für maximale Konvertierung optimiert.",
-        s_s1_t: "Funnel-Aufbau", s_s1_d: "Wir bilden die Reise des Käufers Schritt für Schritt ab: Bewusstsein → Interesse → Entscheidung → Kauf → Bindung.",
-        s_s2_t: "Kommunikationsautomatisierung", s_s2_d: "Automatisierte E-Mail-Sequenzen, SMS und Follow-ups, die jeden Lead ohne Ihr Zutun pflegen.",
-        s_s3_t: "Zielgerichtete Werbung", s_s3_d: "Meta Ads & Google Ads, die so optimiert sind, dass sie von den richtigen Leuten im exakt richtigen Moment gesehen werden.",
-        s_s4_t: "Überzeugende Inhalte", s_s4_d: "Werbetexte, Videokreative und Landingpages, die auf der Psychologie des Kaufens basieren.",
-        s_st1_v: "3×", s_st1_l: "Durchschnittliches Wachstum", s_st2_v: "24/7", s_st2_l: "Aktives System", s_st3_v: "30t", s_st3_l: "Vollständiges Setup",
-        r_m_title: "Messbare Ergebnisse", r_m_sub: "Jeder investierte Groschen hat eine klare Rendite",
-        r_m_desc: "Wir glauben nicht an leere Versprechen. Alles wird gemessen, analysiert und optimiert. Sehen Sie genau, wohin Ihr Geld fließt und was es jeden Tag bringt.",
-        r_s1_t: "Echtzeit-Dashboard", r_s1_d: "Sehen Sie live: Wie viele Leads heute, wie viele gekauft haben und die Kosten für jeden neu gewonnenen Kunden.",
-        r_s2_t: "Wichtige KPIs", r_s2_d: "Wir verfolgen CPL (Kosten pro Lead), ROAS (Nutzen-Kosten-Verhältnis der Werbung) und LTV (Kundenlebenszeitwert).",
-        r_s3_t: "Kontinuierliches A/B-Testing", r_s3_d: "Wir testen wöchentlich Werbevarianten und Landingpages, um die Formel mit der maximalen Konvertierung zu finden.",
-        r_s4_t: "Wöchentliche Berichterstattung", r_s4_d: "Wöchentliche Treffen, bei denen wir den Fortschritt überprüfen, Ergebnisse besprechen und die nächsten Schritte planen.",
-        r_st1_v: "+87%", r_st1_l: "Durschn. Konvertierung", r_st2_v: "2.4×", r_st2_l: "Durschn. ROAS", r_st3_v: "Live", r_st3_l: "Berichterstattung",
-        cats: "WERBUNG • MARKETING • ANGEBOTE • VIDEO FÜR KINDER",
-        n_call: "Rufen Sie uns direkt an",
-        n_email: "Senden Sie eine offizielle E-Mail"
+    de: {
+        languageLabel: 'Sprache wählen', navLabel: 'Hauptnavigation', menuOpen: 'Menü öffnen', menuClose: 'Menü schließen', navServices: 'Leistungen', navProcess: 'So arbeiten wir', navContact: 'Kontakt', navWhatsapp: 'Chat auf WhatsApp',
+        heroAlt: 'Ein Kreativteam plant gemeinsam', heroEyebrow: 'Kreativstudio für Wachstum', heroTitleOne: 'Mutige Ideen.', heroTitleTwo: 'Echtes Wachstum.',
+        heroCopy: 'Wir entwickeln Ihre Marke weiter und erreichen die richtigen Menschen mit klarer Strategie, smarter Werbung und einprägsamen Inhalten.', heroCta: 'Erzählen Sie uns von Ihrem Geschäft', heroServices: 'Unsere Leistungen entdecken', heroNote: 'Von der ersten Idee bis zur laufenden Kampagne.',
+        introEyebrow: 'BizPromo.AL · Albanien', introTitleOne: 'Gutes Marketing', introTitleTwo: 'beginnt mit Klarheit.', introCopy: 'Es braucht nicht mehr Lärm, sondern eine starke Idee, einen klaren Plan und kreative Arbeit, die Ihrem Unternehmen dient.', introLink: 'So arbeiten wir',
+        servicesEyebrow: 'Unsere Leistungen', servicesTitleOne: 'Von der Idee', servicesTitleTwo: 'zur Wirkung.', servicesAside: 'Aufeinander abgestimmte Leistungen mit einem Ziel: Ihr Unternehmen sichtbarer und unverwechselbar zu machen.',
+        serviceOneTitle: 'Strategie & Identität', serviceOneCopy: 'Wir analysieren Marke und Wettbewerb, definieren Zielgruppe und Positionierung und entwickeln Botschaften, Tonalität und visuelle Richtung.', serviceOneTag: 'Ausrichtung',
+        serviceTwoTitle: 'Digitale Werbung', serviceTwoCopy: 'Wir planen Meta Ads (Facebook und Instagram) sowie Google Ads: Zielgruppen, Werbemittel, Tests, Optimierung und Berichte.', serviceTwoTag: 'Reichweite',
+        serviceThreeTitle: 'Inhalte & Video', serviceThreeCopy: 'Wir erstellen Social-Media-Pläne, Beitragstexte, Bildideen, Angebote, Kurzvideos und Videoinhalte für Kinder.', serviceThreeTag: 'Kreativität',
+        serviceFourTitle: 'Messen & verbessern', serviceFourCopy: 'Wir erfassen Reichweite, Klicks und Anfragen, erstellen klare Berichte und empfehlen Verbesserungen für die nächste Kampagne.', serviceFourTag: 'Fortschritt',
+        processEyebrow: 'Unser Ablauf', processTitleOne: 'Keine Geheimnisse.', processTitleTwo: 'Ein klarer Plan.', processCopy: 'Ein einfacher Ablauf, der Sie einbezieht und jeden Schritt mit Ihren Zielen verbindet.',
+        stepOneTitle: 'Zuhören', stepOneCopy: 'Wir verstehen Ihr Unternehmen, Ihre Herausforderungen, Zielgruppe und Ziele.', stepTwoTitle: 'Planen', stepTwoCopy: 'Wir legen Richtung, Botschaft, Kanäle und konkrete Maßnahmen fest.', stepThreeTitle: 'Umsetzen & verbessern', stepThreeCopy: 'Wir erstellen und veröffentlichen Inhalte, messen die Reaktion und optimieren die Kampagne.',
+        contactEyebrow: 'Der erste Schritt', contactTitleOne: 'Eine Idee?', contactTitleTwo: 'Sprechen wir.', contactCopy: 'Erzählen Sie uns von Ihrem Unternehmen und davon, was Sie verändern möchten. Das erste Gespräch beginnt hier.', phoneLabel: 'Telefon / WhatsApp', emailLabel: 'E-Mail', socialLabel: 'Soziale Medien',
+        businessLabel: 'Name des Unternehmens', businessPlaceholder: 'Wie heißt Ihr Unternehmen?', contactLabel: 'Telefonnummer oder WhatsApp', phonePlaceholder: '+355 ...', messageLabel: 'Was haben Sie vor?', messagePlaceholder: 'Erzählen Sie uns kurz von Ihrer Idee...', submitLabel: 'Nachricht senden', sendingLabel: 'Wird gesendet...', successMessage: 'Nachricht gesendet. Wir melden uns bald.', errorMessage: 'Nachricht nicht gesendet. Bitte erneut versuchen oder anrufen.', footerTagline: 'Mutige Ideen. Echtes Wachstum.', pageTitle: 'BizPromo.AL — Mutige Ideen. Echtes Wachstum.', pageDescription: 'BizPromo.AL unterstützt Unternehmen mit klarer Strategie, Werbung und kreativen Inhalten.'
     },
-    fr: { 
-        badge: "L'agence de marketing n°1 en Albanie",
-        t1: "Arrêtez de gaspiller", t2: "Gagnez des clients", 
-        sub: "Nous apportons des clients qui achètent vos produits grâce à la technologie.", 
-        cta: "Trouver des clients", w: "Ce que nous faisons", 
-        a_h: "Analyse", a_p: "Nous analysons votre entreprise.", 
-        s_h: "Stratégie", s_p: "Système automatique d'achat.", 
-        r_h: "Résultats", r_p: "Les clients viennent à vous.",
-        stats_badge: "Nos statistiques",
-        stats_title: "Des résultats qui parlent d'eux-mêmes",
-        stats_desc: "Nous construisons des marques modernes, premium et des performances réelles pour les entreprises qui veulent dominer en ligne.",
-        s1_v: "500+", s1_t: "Clients Actifs",
-        s2_v: "3M€", s2_t: "Ventes Générées",
-        s3_v: "90%", s3_t: "Satisfaction Client",
-        s4_v: "24/7", s4_t: "Support Premium",
-        c_title: "Développons votre entreprise!",
-        c_sub: "Réservez un rendez-vous gratuit avec nos experts.",
-        f_name: "Nom de l'entreprise", f_phone: "WhatsApp / Tel", f_msg: "Comment pouvons-nous vous aider?", f_btn: "Envoyer",
-        s_btn: "Nos services",
-        footer: "© 2026 BIZPROMOB. Tous droits réservés.",
-        alert_success: "Demande envoyée avec succès ! Nous vous contacterons bientôt.",
-        read_more: "Lire plus",
-        m_cta: "Contactez-nous pour une consultation gratuite  →",
-        a_m_title: "Analyse Approfondie", a_m_sub: "Nous comprenons votre entreprise avant toute autre étape",
-        a_m_desc: "Notre analyse n'est pas superficielle — nous creusons profondément dans l'industrie, la concurrence et les acheteurs potentiels. Le résultat : un plan d'action basé sur des données réelles, pas sur des hypothèses.",
-        a_s1_t: "Audit d'Entreprise", a_s1_d: "Nous évaluons l'état actuel : ce qui fonctionne, ce qui ne fonctionne pas et où vous perdez des clients.",
-        a_s2_t: "Analyse des Concurrents", a_s2_d: "Nous découvrons les stratégies des concurrents — leurs forces et les lacunes que vous pouvez exploiter.",
-        a_s3_t: "Profil de l'Acheteur Idéal", a_s3_d: "Nous identifions qui sont vos meilleurs clients : données démographiques, comportement et ce qui les pousse à acheter.",
-        a_s4_t: "Analyse du Marché", a_s4_d: "Nous comprenons les tendances actuelles et les espaces inexploités où votre entreprise peut croître rapidement.",
-        a_st1_v: "360°", a_st1_l: "Vue d'ensemble complète", a_st2_v: "48h", a_st2_l: "Rapport détaillé", a_st3_v: "100%", a_st3_l: "Personnalisé",
-        s_m_title: "Stratégie & Marketing de Tunnel", s_m_sub: "Un système qui fonctionne 24h/24, 7j/7, même pendant que vous dormez",
-        s_m_desc: "Nous construisons le tunnel de vente complet — du premier contact à l'achat et à la fidélisation. Entièrement automatisé, testé et optimisé pour une conversion maximale.",
-        s_s1_t: "Construction du Tunnel", s_s1_d: "Nous cartographions le parcours de l'acheteur étape par étape : notoriété → intérêt → décision → achat → fidélisation.",
-        s_s2_t: "Automatisation des Communications", s_s2_d: "Séquences d'e-mails, SMS et suivis automatisés qui nourrissent chaque prospect sans votre intervention.",
-        s_s3_t: "Publicités Ciblées", s_s3_d: "Meta Ads & Google Ads optimisés pour être vus par les bonnes personnes, au moment précis.",
-        s_s4_t: "Contenu Convaincant", s_s4_d: "Textes publicitaires, créations vidéo et pages de destination construites sur la psychologie de l'achat.",
-        s_st1_v: "3×", s_st1_l: "Croissance moyenne", s_st2_v: "24/7", s_st2_l: "Système actif", s_st3_v: "30j", s_st3_l: "Configuration complète",
-        r_m_title: "Résultats Mesurables", r_m_sub: "Chaque centime investi a un retour clair",
-        r_m_desc: "Nous ne croyons pas aux promesses vides. Tout est mesuré, analysé et optimisé. Voyez exactement où va votre argent et ce qu'il apporte chaque jour.",
-        r_s1_t: "Tableau de Bord en Temps Réel", r_s1_d: "Voyez en direct : combien de prospects aujourd'hui, combien ont acheté et le coût de chaque nouveau client acquis.",
-        r_s2_t: "Indicateurs Clés (KPI)", r_s2_d: "Nous suivons le CPL (Coût par Prospect), le ROAS (Retour sur investissement publicitaire) et la LTV (Valeur à vie du client).",
-        r_s3_t: "Tests A/B Continus", r_s3_d: "Nous testons chaque semaine des variantes d'annonces et de pages de destination pour trouver la formula avec une conversion maximale.",
-        r_s4_t: "Rapports Hebdomadaires", r_s4_d: "Réunions hebdomadaires où nous passons en revue les progrès, discutons des résultats et planifions les étapes suivantes.",
-        r_st1_v: "+87%", r_st1_l: "Conversion moyenne", r_st2_v: "2.4×", r_st2_l: "ROAS moyen", r_st3_v: "Live", r_st3_l: "Rapports",
-        cats: "PUBLICITÉ • MARKETING • OFFRES • VIDÉO POUR ENFANTS",
-        n_call: "Appelez-nous directement",
-        n_email: "Envoyer un e-mail officiel"
+    fr: {
+        languageLabel: 'Choisir la langue', navLabel: 'Navigation principale', menuOpen: 'Ouvrir le menu', menuClose: 'Fermer le menu', navServices: 'Nos services', navProcess: 'Notre méthode', navContact: 'Contact', navWhatsapp: 'Écrivez-nous sur WhatsApp',
+        heroAlt: 'Une équipe créative qui planifie ensemble', heroEyebrow: 'Studio créatif pour votre croissance', heroTitleOne: 'Des idées audacieuses.', heroTitleTwo: 'Une vraie croissance.',
+        heroCopy: 'Nous façonnons votre marque et la rapprochons des bonnes personnes grâce à une stratégie claire, des publicités efficaces et des contenus mémorables.', heroCta: 'Parlez-nous de votre activité', heroServices: 'Découvrez nos services', heroNote: 'De la première idée à la campagne en ligne.',
+        introEyebrow: 'BizPromo.AL · Albanie', introTitleOne: 'Un bon marketing', introTitleTwo: 'commence par la clarté.', introCopy: 'Inutile de faire plus de bruit. Il faut une idée forte, un plan clair et un travail créatif au service de votre activité.', introLink: 'Découvrez notre méthode',
+        servicesEyebrow: 'Nos services', servicesTitleOne: 'De l’idée', servicesTitleTwo: 'à l’impact.', servicesAside: 'Des services complémentaires autour d’un même objectif : rendre votre activité plus visible et reconnaissable.',
+        serviceOneTitle: 'Stratégie et identité', serviceOneCopy: 'Nous analysons votre marque et vos concurrents, définissons votre public et votre positionnement, puis vos messages et votre univers visuel.', serviceOneTag: 'Direction',
+        serviceTwoTitle: 'Publicité numérique', serviceTwoCopy: 'Nous planifions des campagnes Meta Ads (Facebook et Instagram) et Google Ads : ciblage, créations, tests, optimisation et rapports.', serviceTwoTag: 'Visibilité',
+        serviceThreeTitle: 'Contenus et vidéos', serviceThreeCopy: 'Nous créons des calendriers sociaux, textes de publications, concepts visuels, offres, vidéos courtes et contenus vidéo pour enfants.', serviceThreeTag: 'Créativité',
+        serviceFourTitle: 'Mesure et amélioration', serviceFourCopy: 'Nous suivons portée, clics et demandes, préparons des rapports clairs et proposons des améliorations pour la prochaine campagne.', serviceFourTag: 'Progrès',
+        processEyebrow: 'Notre méthode', processTitleOne: 'Sans mystère.', processTitleTwo: 'Avec méthode.', processCopy: 'Un processus simple qui vous implique et relie chaque étape à vos objectifs.',
+        stepOneTitle: 'Écouter', stepOneCopy: 'Nous comprenons votre activité, vos défis, votre public et vos objectifs.', stepTwoTitle: 'Planifier', stepTwoCopy: 'Nous définissons la direction, le message, les canaux et les actions concrètes.', stepThreeTitle: 'Créer et améliorer', stepThreeCopy: 'Nous préparons et publions le travail, mesurons les réactions et ajustons la campagne.',
+        contactEyebrow: 'Premier pas', contactTitleOne: 'Une idée ?', contactTitleTwo: 'Parlons-en.', contactCopy: 'Parlez-nous de votre activité et de ce que vous souhaitez changer. La première conversation commence ici.', phoneLabel: 'Téléphone / WhatsApp', emailLabel: 'E-mail', socialLabel: 'Réseaux sociaux',
+        businessLabel: 'Nom de l’entreprise', businessPlaceholder: 'Comment s’appelle votre entreprise ?', contactLabel: 'Téléphone ou WhatsApp', phonePlaceholder: '+355 ...', messageLabel: 'Quelle est votre idée ?', messagePlaceholder: 'Parlez-nous brièvement de votre projet...', submitLabel: 'Envoyer le message', sendingLabel: 'Envoi en cours...', successMessage: 'Message envoyé. Nous vous contacterons bientôt.', errorMessage: 'Échec de l’envoi. Réessayez ou appelez-nous.', footerTagline: 'Des idées audacieuses. Une vraie croissance.', pageTitle: 'BizPromo.AL — Des idées audacieuses. Une vraie croissance.', pageDescription: 'BizPromo.AL aide les entreprises à se développer grâce à la stratégie, la publicité et des contenus créatifs.'
     },
-    gr: { 
-        badge: "Το #1 Διαφημιστικό Γραφείο στην Αλβανία",
-        t1: "Σταματήστε τα έξοδα", t2: "Κερδίστε πελάτες", 
-        sub: "Φέρνουμε πελάτες που αγοράζουν τα προϊόντα σας μέσω τεχνολογίας και ψυχολογίας.", 
-        cta: "Βρείτε πελάτες", w: "Τι κάνουμε", 
-        a_h: "Ανάλυση", a_p: "Αναλύουμε την επιχείρησή σας και την αγορά.", 
-        s_h: "Στρατηγική", s_p: "Αυτόματο σύστημα πωλήσεων.", 
-        r_h: "Αποτελέσματα", r_p: "Οι πελάτες έρχονται σε εσάς.",
-        stats_badge: "Τα στατιστικά μας",
-        stats_title: "Αποτελέσματα που μιλούν από μόνα τους",
-        stats_desc: "Χτίζουμε σύγχρονα, premium brands και πραγματική απόδοση για επιχειρήσεις που θέλουν να κυριαρχήσουν στο διαδίκτυο.",
-        s1_v: "500+", s1_t: "Ενεργοί Πελάτες",
-        s2_v: "3M€", s2_t: "Πωλήσεις που Δημιουργήθηκαν",
-        s3_v: "90%", s3_t: "Ικανοποίηση Πελατών",
-        s4_v: "24/7", s4_t: "Premium Υποστήριξη",
-        c_title: "Ας αναπτύξουμε την επιχείρησή σας!",
-        c_sub: "Κλείστε ένα δωρεάν ραντεβού με τους ειδικούς μας.",
-        f_name: "Όνομα Επιχείρησης", f_phone: "WhatsApp / Τηλ", f_msg: "Πώς μπορούμε να βοηθήσουμε;", f_btn: "Αποστολή",
-        s_btn: "Οι υπηρεσίες μας",
-        footer: "© 2026 BIZPROMOB. Με επιφύλαξη παντός δικαιώματος.",
-        alert_success: "Το αίτημα στάλθηκε επιτυχώς! Θα επικοινωνήσουμε μαζί σας σύντομα.",
-        read_more: "Διααιβάστε περισσότερα",
-        m_cta: "Επικοινωνήστε μαζί μας για δωρεάν διαβούλευση  →",
-        a_m_title: "Σε Βάθος Ανάλυση", a_m_sub: "Κατανοούμε την επιχείρησή σας πριν από κάθε άλλο βήμα",
-        a_m_desc: "Η ανάλυσή μας δεν είναι επιφανειακή — σκάβουμε βαθιά στον κλάδο, τον ανταγωνισμό και τους πιθανούς αγοραστές. Το αποτέλεσμα: ένα σχέδιο δράσης βασισμένο σε πραγματικά δεδομένα, όχι σε υποθέσεις.",
-        a_s1_t: "Έλεγχος Επιχείρησης", a_s1_d: "Αξιολογούμε την τρέχουσα κατάσταση: τι λειτουργεί, τι όχι και πού χάνετε πελάτες.",
-        a_s2_t: "Ανάλυση Ανταγωνιστών", a_s2_d: "Ανακαλύπτουμε τις στρατηγικές των ανταγωνιστών — τα δυνατά τους σημεία και τα κενά που μπορείτε να εκμεταλλευτείτε.",
-        a_s3_t: "Προφίλ Ιδανικού Αγοραστή", a_s3_d: "Προσδιορίζουμε ποιοι είναι οι καλύτεροι πελάτες σας: δημογραφικά στοιχεία, συμπεριφορά και τι τους ωθεί να αγοράσουν.",
-        a_s4_t: "Ανάλυση Αγοράς", a_s4_d: "Κατανοούμε τις τρέχουσες τάσεις και τους αναξιοποίητους χώρους όπου η επιχείρησή σας μπορεί να αναπτυχθεί γρήγορα.",
-        a_st1_v: "360°", a_st1_l: "Πλήρης επισκόπηση", a_st2_v: "48ώ", a_st2_l: "Λεπτομερής αναφορά", a_st3_v: "100%", a_st3_l: "Εξατομικευμένη",
-        s_m_title: "Στρατηγική & Funnel Marketing", s_m_sub: "Ένα σύστημα που λειτουργεί 24/7, ακόμα και όταν κοιμάστε",
-        s_m_desc: "Χτίζουμε το πλήρες funnel πωλήσεων — από την πρώτη επαφή έως την αγορά και τη διατήρηση. Πλήρως αυτοματοποιημένο, δοκιμασμένο και βελτιστοποιημένο για μέγιστη μετατροπή.",
-        s_s1_t: "Δημιουργία Funnel", s_s1_d: "Χαρτογραφούμε το ταξίδι του αγοραστή βήμα προς βήμα: επίγνωση → ενδιαφέρον → απόφαση → αγορά → διατήρηση.",
-        s_s2_t: "Αυτοματοποίηση Επικοινωνίας", s_s2_d: "Αυτοματοποιημένες ακολουθίες email, SMS και follow-ups που φροντίζουν κάθε lead χωρίς τη δική σας παρέμβαση.",
-        s_s3_t: "Στοχευμένες Διαφημίσεις", s_s3_d: "Meta Ads & Google Ads βελτιστοποιημένα ώστε να εμφανίζονται στα κατάλληλα άτομα, την κατάλληλη στιγμή.",
-        s_s4_t: "Ελκυστικό Περιεχόμενο", s_s4_d: "Κείμενα διαφημίσεων, δημιουργικά βίντεο και landing pages βασισμένα στην ψυχολογία της αγοράς.",
-        s_st1_v: "3×", s_st1_l: "Μέση ανάπτυξη", s_st2_v: "24/7", s_st2_l: "Ενεργό σύστημα", s_st3_v: "30ημ", s_st3_l: "Πλήρης εγκατάσταση",
-        r_m_title: "Μετρήσιμα Αποτελέσματα", r_m_sub: "Κάθε δεκάρα που επενδύεται έχει μια σαφή απόδοση",
-        r_m_desc: "Δεν πιστεύουμε σε κενές υποσχέσεις. Όλα μετριούνται, αναλύονται και βελτιστοποιούνται. Δείτε ακριβώς πού πάνε τα χρήματά σας και τι φέρνουν κάθε μέρα.",
-        r_s1_t: "Ταμπλό σε Πραγματικό Χρόνο", r_s1_d: "Δείτε ζωντανά: πόσα leads σήμερα, πόσοι αγόρασαν και το κόστος κάθε νέου πελάτη.",
-        r_s2_t: "Βασικά KPIs", r_s2_d: "Παρακολουθούμε το CPL (Κόστος ανά Lead), το ROAS (Απόδοση διαφημιστικής δαπάνης) και το LTV (Αξία κύκλου ζωής πελάτη).",
-        r_s3_t: "Συνεχές A/B Testing", r_s3_d: "Δοκιμάζουμε παραλλαγές διαφημίσεων και landing pages εβδομαδιαίως για να βρούμε τη φόρμουλα με τη μέγιστη μετατροπή.",
-        r_s4_t: "Εβδομαδιαία Αναφορά", r_s4_d: "Εβδομαδιαίες συναντήσεις όπου ανασκοπούμε την πρόοδο, συζητάμε τα αποτελέσματα και σχεδιάζουμε τα επόμενα βήματα.",
-        r_st1_v: "+87%", r_st1_l: "Μέση Μετατροπή", r_st2_v: "2.4×", r_st2_l: "Μέσο ROAS", r_st3_v: "Live", r_st3_l: "Αναφορές",
-        cats: "ΔΙΑΦΗΜΙΣΗ • MARKETING • ΠΡΟΣΦΟΡΕΣ • ΒΙΝΤΕΟ ΓΙΑ ΠΑΙΔΙΑ",
-        n_call: "Καλέστε μας απευθείας",
-        n_email: "Στείλτε επίσημο Email"
+    gr: {
+        languageLabel: 'Επιλογή γλώσσας', navLabel: 'Κύρια πλοήγηση', menuOpen: 'Άνοιγμα μενού', menuClose: 'Κλείσιμο μενού', navServices: 'Τι κάνουμε', navProcess: 'Πώς δουλεύουμε', navContact: 'Επικοινωνία', navWhatsapp: 'Μιλήστε στο WhatsApp',
+        heroAlt: 'Μια δημιουργική ομάδα σχεδιάζει μαζί', heroEyebrow: 'Δημιουργικό στούντιο ανάπτυξης', heroTitleOne: 'Τολμηρές ιδέες.', heroTitleTwo: 'Πραγματική ανάπτυξη.',
+        heroCopy: 'Διαμορφώνουμε το brand σας και το φέρνουμε στους σωστούς ανθρώπους με σαφή στρατηγική, έξυπνη διαφήμιση και περιεχόμενο που μένει αξέχαστο.', heroCta: 'Πείτε μας για την επιχείρησή σας', heroServices: 'Δείτε τις υπηρεσίες μας', heroNote: 'Από την πρώτη ιδέα έως την καμπάνια.',
+        introEyebrow: 'BizPromo.AL · Αλβανία', introTitleOne: 'Το καλό μάρκετινγκ', introTitleTwo: 'ξεκινά με σαφήνεια.', introCopy: 'Δεν χρειάζεται περισσότερος θόρυβος. Χρειάζεται μια δυνατή ιδέα, ένα σαφές σχέδιο και δημιουργική δουλειά που στηρίζει την επιχείρησή σας.', introLink: 'Δείτε πώς δουλεύουμε',
+        servicesEyebrow: 'Τι κάνουμε', servicesTitleOne: 'Από την ιδέα', servicesTitleTwo: 'στο αποτέλεσμα.', servicesAside: 'Συνδεδεμένες υπηρεσίες με έναν στόχο: να κάνουν την επιχείρησή σας πιο ορατή και ξεχωριστή.',
+        serviceOneTitle: 'Στρατηγική και ταυτότητα', serviceOneCopy: 'Αναλύουμε το brand και τον ανταγωνισμό, ορίζουμε το κοινό και τη θέση του και διαμορφώνουμε μηνύματα και οπτική κατεύθυνση.', serviceOneTag: 'Κατεύθυνση',
+        serviceTwoTitle: 'Ψηφιακή διαφήμιση', serviceTwoCopy: 'Σχεδιάζουμε καμπάνιες Meta Ads (Facebook και Instagram) και Google Ads: στόχευση, δημιουργικά, δοκιμές, βελτιστοποίηση και αναφορές.', serviceTwoTag: 'Εμβέλεια',
+        serviceThreeTitle: 'Περιεχόμενο και βίντεο', serviceThreeCopy: 'Δημιουργούμε πλάνα κοινωνικών δικτύων, κείμενα, οπτικές ιδέες, προσφορές, σύντομα βίντεο και βίντεο για παιδιά.', serviceThreeTag: 'Δημιουργία',
+        serviceFourTitle: 'Μέτρηση και βελτίωση', serviceFourCopy: 'Παρακολουθούμε απήχηση, κλικ και αιτήματα, ετοιμάζουμε σαφείς αναφορές και προτείνουμε βελτιώσεις για την επόμενη καμπάνια.', serviceFourTag: 'Πρόοδος',
+        processEyebrow: 'Η διαδικασία μας', processTitleOne: 'Χωρίς μυστήριο.', processTitleTwo: 'Με μέθοδο.', processCopy: 'Μια απλή διαδικασία που σας κρατά ενήμερους και συνδέει κάθε βήμα με τους στόχους σας.',
+        stepOneTitle: 'Ακούμε', stepOneCopy: 'Κατανοούμε την επιχείρηση, τις προκλήσεις, το κοινό και τους στόχους σας.', stepTwoTitle: 'Σχεδιάζουμε', stepTwoCopy: 'Καθορίζουμε κατεύθυνση, μήνυμα, κανάλια και συγκεκριμένες ενέργειες.', stepThreeTitle: 'Δημιουργούμε και βελτιώνουμε', stepThreeCopy: 'Ετοιμάζουμε και δημοσιεύουμε το έργο, μετράμε την ανταπόκριση και προσαρμόζουμε την καμπάνια.',
+        contactEyebrow: 'Το πρώτο βήμα', contactTitleOne: 'Έχετε μια ιδέα;', contactTitleTwo: 'Ας μιλήσουμε.', contactCopy: 'Πείτε μας για την επιχείρησή σας και τι θέλετε να αλλάξετε. Η πρώτη συζήτηση ξεκινά εδώ.', phoneLabel: 'Τηλέφωνο / WhatsApp', emailLabel: 'Email', socialLabel: 'Κοινωνικά δίκτυα',
+        businessLabel: 'Όνομα επιχείρησης', businessPlaceholder: 'Πώς ονομάζεται η επιχείρησή σας;', contactLabel: 'Τηλέφωνο ή WhatsApp', phonePlaceholder: '+355 ...', messageLabel: 'Τι έχετε στο μυαλό σας;', messagePlaceholder: 'Πείτε μας λίγα λόγια για την ιδέα σας...', submitLabel: 'Αποστολή μηνύματος', sendingLabel: 'Αποστολή...', successMessage: 'Το μήνυμα στάλθηκε. Θα επικοινωνήσουμε σύντομα.', errorMessage: 'Η αποστολή απέτυχε. Δοκιμάστε ξανά ή καλέστε μας.', footerTagline: 'Τολμηρές ιδέες. Πραγματική ανάπτυξη.', pageTitle: 'BizPromo.AL — Τολμηρές ιδέες. Πραγματική ανάπτυξη.', pageDescription: 'Η BizPromo.AL βοηθά επιχειρήσεις να αναπτυχθούν με στρατηγική, διαφήμιση και δημιουργικό περιεχόμενο.'
     }
 };
 
-function setLang(lang) {
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-            el.innerText = translations[lang][key];
-        }
+function setLanguage(language) {
+    activeLanguage = translations[language] ? language : 'sq';
+    const copy = translations[activeLanguage];
+    document.documentElement.lang = activeLanguage === 'gr' ? 'el' : activeLanguage;
+
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const translation = copy[element.dataset.i18n];
+        if (translation) element.textContent = translation;
     });
 
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (translations[lang] && translations[lang][key]) {
-            el.placeholder = translations[lang][key];
-        }
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        const translation = copy[element.dataset.i18nPlaceholder];
+        if (translation) element.placeholder = translation;
     });
+
+    document.querySelectorAll('[data-i18n-alt]').forEach(element => {
+        const translation = copy[element.dataset.i18nAlt];
+        if (translation) element.alt = translation;
+    });
+
+    document.querySelectorAll('[data-i18n-aria]').forEach(element => {
+        const translation = copy[element.dataset.i18nAria];
+        if (translation) element.setAttribute('aria-label', translation);
+    });
+
+    document.title = copy.pageTitle;
+    document.querySelector('#page-description').content = copy.pageDescription;
+    if (languageCode) languageCode.textContent = activeLanguage.toUpperCase();
+    languageOptions?.querySelectorAll('[data-language]').forEach(option => {
+        option.setAttribute('aria-pressed', String(option.dataset.language === activeLanguage));
+    });
+    if (menuButton) {
+        const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+        menuButton.setAttribute('aria-label', copy[isOpen ? 'menuClose' : 'menuOpen']);
+    }
 }
 
-// Inicializimi i gjuhës nga memorie ose default në shqip
-document.addEventListener('DOMContentLoaded', () => {
-    const savedLang = localStorage.getItem('lang') || 'sq';
-    const langSelect = document.getElementById('lang');
-    if (langSelect) langSelect.value = savedLang;
-    setLang(savedLang);
+const savedLanguage = localStorage.getItem('language') || 'sq';
+setLanguage(savedLanguage);
+
+languageSwitcher?.addEventListener('click', () => {
+    const isOpen = languageSwitcher.getAttribute('aria-expanded') === 'true';
+    languageSwitcher.setAttribute('aria-expanded', String(!isOpen));
+    languageOptions.hidden = isOpen;
 });
 
-// Ndryshimi i gjuhës dhe ruajtja në memorie
-document.getElementById('lang').addEventListener('change', e => {
-    setLang(e.target.value);
-    localStorage.setItem('lang', e.target.value);
+languageOptions?.querySelectorAll('[data-language]').forEach(option => {
+    option.addEventListener('click', () => {
+        setLanguage(option.dataset.language);
+        localStorage.setItem('language', activeLanguage);
+        languageSwitcher.setAttribute('aria-expanded', 'false');
+        languageOptions.hidden = true;
+        languageSwitcher.focus();
+    });
 });
 
-// Menaxhimi i dërgimit të formës në mënyrë asinkrone (Premium AJAX Submit)
-document.getElementById('contactForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const form = e.target;
-    const button = form.querySelector('button[type="submit"]');
-    const originalContent = button.innerHTML;
-    const currentLang = document.getElementById('lang').value || 'sq';
-    
-    button.disabled = true;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> ...';
-    
-    try {
-        const response = await fetch(form.action, {
-            method: form.method,
-            body: new FormData(form),
-            headers: { 'Accept': 'application/json' }
+document.addEventListener('click', event => {
+    if (!event.target.closest('.language-control') && languageSwitcher) {
+        languageSwitcher.setAttribute('aria-expanded', 'false');
+        languageOptions.hidden = true;
+    }
+});
+
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && languageSwitcher) {
+        languageSwitcher.setAttribute('aria-expanded', 'false');
+        languageOptions.hidden = true;
+        languageSwitcher.focus();
+    }
+});
+
+if (menuButton && navigation) {
+    menuButton.addEventListener('click', () => {
+        const isOpen = menuButton.getAttribute('aria-expanded') === 'true';
+        menuButton.setAttribute('aria-expanded', String(!isOpen));
+        menuButton.setAttribute('aria-label', translations[activeLanguage][isOpen ? 'menuOpen' : 'menuClose']);
+        navigation.classList.toggle('is-open', !isOpen);
+    });
+
+    navigation.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            menuButton.setAttribute('aria-expanded', 'false');
+            menuButton.setAttribute('aria-label', translations[activeLanguage].menuOpen);
+            navigation.classList.remove('is-open');
         });
-        
-        if (response.ok) {
-            confetti({
-                particleCount: 150,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#3b82f6', '#9333ea', '#ffffff']
-            });
-            
-            alert(translations[currentLang].alert_success || "Sukses!");
-            form.reset();
-        } else {
-            alert("Gabim! Ju lutem provoni përsëri.");
-        }
+    });
+}
+
+document.querySelector('#year').textContent = new Date().getFullYear();
+
+const revealItems = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.body.classList.add('js-ready');
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12 });
+
+    revealItems.forEach(item => revealObserver.observe(item));
+}
+
+const contactForm = document.querySelector('#contactForm');
+const formStatus = document.querySelector('#form-status');
+
+contactForm?.addEventListener('submit', async event => {
+    event.preventDefault();
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    const originalLabel = submitButton.innerHTML;
+
+    submitButton.disabled = true;
+    submitButton.textContent = translations[languageSwitcher.value].sendingLabel;
+    formStatus.textContent = '';
+
+    try {
+        const response = await fetch(contactForm.action, {
+            method: contactForm.method,
+            body: new FormData(contactForm),
+            headers: { Accept: 'application/json' }
+        });
+
+        if (!response.ok) throw new Error('Dërgimi dështoi.');
+
+        contactForm.reset();
+        formStatus.textContent = translations[languageSwitcher.value].successMessage;
     } catch (error) {
-        alert("Gabim rrjeti! Kontrolloni lidhjen tuaj.");
+        formStatus.textContent = translations[languageSwitcher.value].errorMessage;
     } finally {
-        button.disabled = false;
-        button.innerHTML = originalContent;
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalLabel;
     }
 });
-    
-// Ngarkimi i faqes, aplikimi i gjuhës së ruajtur dhe preloader-i
-window.addEventListener('DOMContentLoaded', () => {
-    // 1. Inicializimi i gjuhës nga kujtesa (ose default 'sq')
-    const savedLang = localStorage.getItem('lang') || 'sq';
-    const langSelect = document.getElementById('lang');
-    if (langSelect) {
-        langSelect.value = savedLang;
-        setLang(savedLang);
-    }
-
-    // 2. Shiriti i progresit
-    const progressBar = document.getElementById('progress-bar');
-    if (progressBar) {
-        setTimeout(() => {
-            progressBar.style.width = '100%';
-        }, 100);
-    }
-});
-
-window.addEventListener('load', () => {
-    const preloader = document.getElementById('preloader');
-    if (preloader) {
-        setTimeout(() => {
-            preloader.classList.add('fade-out');
-            setTimeout(() => {
-                preloader.style.display = 'none';
-            }, 700);
-        }, 1500);
-    }
-});
-
-
-/* ═══════════════════════════════════════════
-   LOGJIKA E MODALIT MULTILINGUAL (IIFE)
-   ═══════════════════════════════════════════ */
-(function () {
-
-const CONFIG = {
-    analiza: {
-        prefix: 'a',
-        g:  'linear-gradient(135deg,#1e40af,#3b82f6,#93c5fd)',
-        ib: '#dbeafe', ic: '#2563eb', icon: 'fa-chart-pie',
-        stepsIcon: ['fa-magnifying-glass', 'fa-users-gear', 'fa-bullseye', 'fa-chart-line']
-    },
-    strategji: {
-        prefix: 's',
-        g:  'linear-gradient(135deg,#5b21b6,#8b5cf6,#c4b5fd)',
-        ib: '#ede9fe', ic: '#7c3aed', icon: 'fa-wand-magic-sparkles',
-        stepsIcon: ['fa-filter', 'fa-robot', 'fa-rectangle-ad', 'fa-pen-nib']
-    },
-    rezultate: {
-        prefix: 'r',
-        g:  'linear-gradient(135deg,#064e3b,#059669,#6ee7b7)',
-        ib: '#d1fae5', ic: '#059669', icon: 'fa-money-bill-trend-up',
-        stepsIcon: ['fa-gauge-high', 'fa-chart-column', 'fa-flask-vial', 'fa-comments']
-    }
-};
-
-function render(id) {
-    const lang = document.getElementById('lang').value || 'sq';
-    const t = translations[lang];
-    const cfg = CONFIG[id];
-    const p = cfg.prefix;
-
-    let stepsHTML = '';
-    for (let i = 1; i <= 4; i++) {
-        stepsHTML += `
-            <div class="svc-step">
-                <div class="svc-si" style="background:${cfg.ib}">
-                    <i class="fas ${cfg.stepsIcon[i-1]}" style="color:${cfg.ic};font-size:.88rem;"></i>
-                </div>
-                <div>
-                    <p class="svc-t">${t[`${p}_s${i}_t`]}</p>
-                    <p class="svc-d">${t[`${p}_s${i}_d`]}</p>
-                </div>
-            </div>`;
-    }
-
-    let statsHTML = '';
-    for (let i = 1; i <= 3; i++) {
-        statsHTML += `
-            <div class="svc-stat">
-                <p class="svc-sv" style="color:${cfg.ic}">${t[`${p}_st${i}_v`]}</p>
-                <p class="svc-sl">${t[`${p}_st${i}_l`]}</p>
-            </div>`;
-    }
-
-    return `
-    <div style="background:${cfg.g};padding:1.85rem 1.7rem 2rem;position:relative;">
-        <div class="svc-dh" style="width:36px;height:4px;background:rgba(255,255,255,.38);border-radius:99px;margin:0 auto 1.3rem;"></div>
-        <button class="svc-close-btn" aria-label="Mbyll">
-            <i class="fas fa-xmark" style="color:#fff;font-size:.88rem;pointer-events:none;"></i>
-        </button>
-        <div style="width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:.8rem;display:flex;align-items:center;justify-content:center;margin-bottom:.8rem;">
-            <i class="fas ${cfg.icon}" style="color:#fff;font-size:1.25rem;"></i>
-        </div>
-        <h2 style="color:#fff;font-size:clamp(1.3rem,3vw,1.7rem);font-weight:900;line-height:1.15;margin:0 0 .3rem;">${t[`${p}_m_title`]}</h2>
-        <p style="color:rgba(255,255,255,.8);font-size:.875rem;margin:0;">${t[`${p}_m_sub`]}</p>
-    </div>
-
-    <div style="padding:1.5rem 1.7rem 1.85rem;">
-        <p class="svc-desc">${t[`${p}_m_desc`]}</p>
-        <div class="svc-grid" style="display:grid;gap:.55rem;margin-bottom:1.35rem;">${stepsHTML}</div>
-        <div style="display:flex;gap:.5rem;margin-bottom:1.6rem;">${statsHTML}</div>
-        <button class="svc-cta" style="background:${cfg.g};">
-            ${t['m_cta']}
-        </button>
-    </div>`;
-}
-
-const modal = document.getElementById('svc-modal');
-const body  = document.getElementById('svc-body');
-
-function open(id) {
-    body.innerHTML = render(id);
-    body.querySelector('.svc-close-btn').onclick = close;
-    body.querySelector('.svc-cta').onclick = () => {
-        close();
-        const t = document.getElementById('kontakti');
-        if (t) setTimeout(() => t.scrollIntoView({ behavior: 'smooth' }), 360);
-    };
-    document.body.style.overflow = 'hidden';
-    modal.classList.add('open');
-}
-
-function close() {
-    modal.classList.remove('open');
-    document.body.style.overflow = '';
-}
-
-document.querySelectorAll('[data-modal]').forEach(el =>
-    el.addEventListener('click', () => open(el.dataset.modal))
-);
-
-document.getElementById('svc-bd').addEventListener('click', close);
-document.addEventListener('keydown', e => e.key === 'Escape' && close());
-
-})();
